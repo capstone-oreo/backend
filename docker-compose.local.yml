@@ -1,5 +1,21 @@
 version: "3"
 services:
+  spring:
+    container_name: spring
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SERVER_MODE: local
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_HOST: mongo
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+
   mongo:
     image: "mongo:latest"
     container_name: mongo
