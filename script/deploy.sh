@@ -28,7 +28,7 @@ sleep 10
 # 실행 중인 spring container 확인
 for RETRY_COUNT in $(seq 1 10)
 do
-  RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/api/test)
+  RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/test)
 
   if [ "$RESPONSE_CODE" -ge 400 ]
   then
