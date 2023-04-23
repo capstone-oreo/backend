@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.5'
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'jacoco'
 }
 
 group = 'com.oreo'
@@ -33,4 +34,19 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test // 리포트 생성 전에 test 수행
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
+        // 기본 경로는 build/reports/jacoco
+    }
 }
