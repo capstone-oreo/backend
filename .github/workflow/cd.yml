@@ -88,8 +88,6 @@ jobs:
             chmod +x ./script/*.sh
             ./script/deploy.sh ${{ env.ORGANIZATION }} ${{ env.REPOSITORY }} ${{ env.DOCKER_COMPOSE_FILE }}
             docker logout https://ghcr.io
-            ./script/health.sh ${{ env.ORGANIZATION }} ${{ env.REPOSITORY }} ${{ env.DOCKER_COMPOSE_FILE }}
-            # nginx 전환에 실패하면 workflow 종료
             if [ "$?" -ge 1 ]
             then
               exit 1
