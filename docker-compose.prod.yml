@@ -1,0 +1,44 @@
+version: "3"
+services:
+  spring:
+    container_name: spring
+    restart: always
+    image: docker-image # cd.yml로 이미지 설정
+    environment:
+      SERVER_MODE: prod
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_HOST: mongo
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+      - nginx
+
+  mongo:
+    image: "mongo:5.0"
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+      - MONGO_INITDB_DATABASE=oreo
+    restart: always
+    ports:
+      - "27017:27017"
+    command: [--auth]
+    volumes:
+      - ~/mongo:/data/db
+
+  nginx:
+    container_name: nginx
+    image: "nginx:latest"
+    restart: always
+    ports:
+      - "80:80/tcp"
+      - "443:443"
+    volumes:
+      - ~/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ~/nginx/conf.d/application.conf:/etc/nginx/conf.d/application.conf
+      - ~/nginx/conf.d/service-url.inc:/etc/nginx/conf.d/service-url.inc
+    environment:
+      - TZ=Asia/Seoul
