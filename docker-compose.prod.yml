@@ -50,4 +50,4 @@ services:
 
 networks:
   oreo:
-    driver: bridge
+    external: true
