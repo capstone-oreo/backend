@@ -1,7 +1,9 @@
 package com.oreo.backend.storage;
 
 import com.oracle.bmc.objectstorage.ObjectStorage;
+import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
+import com.oracle.bmc.objectstorage.responses.DeleteObjectResponse;
 import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -70,6 +72,20 @@ class OracleStorageServiceImplTest {
             //when
             //then
             assertThrows(RuntimeException.class, () -> storageService.uploadVoice(mockFile));
+        }
+    }
+    
+    @Nested
+    class DeleteVoice {
+        @Test
+        @DisplayName("파일 이름으로 storage의 파일을 삭제한다.")
+        void deleteFile() {
+            //given
+            String filename = "voice%2Faaaabbb.m4a";
+            given(objectStorage.deleteObject(any(DeleteObjectRequest.class))).willReturn(mock(DeleteObjectResponse.class));
+
+            //when
+            storageService.deleteVoice(filename);
         }
     }
 }
