@@ -11,10 +11,17 @@ services:
       MONGO_USERNAME: ${MONGO_USERNAME}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
       MONGO_HOST: mongo
+      ORACLE_CLOUD_BUCKET: ${ORACLE_CLOUD_BUCKET}
+      ORACLE_CLOUD_NAMESPACE: ${ORACLE_CLOUD_NAMESPACE}
+    volumes:
+      - ./oracle-cloud-config:/oracle-cloud-config
+      - ./oracle-cloud-private.pem:/oracle-cloud-private.pem
     ports:
       - "8080:8080"
     depends_on:
       - mongo
+    networks:
+      - oreo
 
   mongo:
     image: "mongo:5.0"
@@ -29,3 +36,9 @@ services:
     command: [--auth]
     volumes:
       - ../mongo:/data/db
+    networks:
+      - oreo
+
+networks:
+  oreo:
+    external: true
