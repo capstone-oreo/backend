@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +36,7 @@ public class OracleStorageServiceImpl implements StorageService {
                 .contentType("audio/x-m4a")
                 .build();
         objectStorage.putObject(request);
-        return fileName;
+        return URLEncoder.encode(fileName, StandardCharsets.UTF_8);
     }
 
 //    public File download() throws IOException {

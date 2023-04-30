@@ -45,7 +45,7 @@ class OracleStorageServiceImplTest {
             String uri = storageService.uploadVoice(mockFile);
 
             //then
-            assertThat(uri).containsPattern("^voice/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.m4a$");
+            assertThat(uri).containsPattern("^voice%2F[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.m4a$");
         }
 
         @Test
