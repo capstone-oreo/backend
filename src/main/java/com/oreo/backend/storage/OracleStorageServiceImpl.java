@@ -5,9 +5,8 @@ import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,14 +23,14 @@ public class OracleStorageServiceImpl implements StorageService {
 
     private final ObjectStorage objectStorage;
 
-    public String uploadVoice(File file) throws IOException {
-        validateM4aExtension(file.getName());
+    public String uploadVoice(MultipartFile file) throws IOException {
+        validateM4aExtension(file.getOriginalFilename());
         String fileName = "voice/" + UUID.randomUUID() + ".m4a";
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucketName(BUCKET)
                 .namespaceName(NAMESPACE)
                 .objectName(fileName)
-                .putObjectBody(new FileInputStream(file))
+                .putObjectBody(file.getInputStream())
                 .contentType("audio/x-m4a")
                 .build();
         objectStorage.putObject(request);
