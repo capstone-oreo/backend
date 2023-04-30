@@ -1,9 +1,6 @@
 package com.oreo.backend.storage;
 
-import com.oracle.bmc.auth.AuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
 import com.oracle.bmc.objectstorage.ObjectStorage;
-import com.oracle.bmc.objectstorage.ObjectStorageClient;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,6 +25,7 @@ public class OracleStorageServiceImpl implements StorageService {
     private final ObjectStorage objectStorage;
 
     public String uploadVoice(File file) throws IOException {
+        validateM4aExtension(file.getName());
         String fileName = "voice/" + UUID.randomUUID() + ".m4a";
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucketName(BUCKET)
@@ -50,4 +49,13 @@ public class OracleStorageServiceImpl implements StorageService {
 //                .build();
 //        GetObjectResponse getObjectResponse = objectStorage.getObject(getObjectRequest);
 //    }
+
+    private void validateM4aExtension(String fileName) {
+        Optional<String> extension = Optional.ofNullable(fileName).filter(f -> f.contains("."))
+                .map(f -> f.substring(fileName.lastIndexOf(".") + 1));
+
+        if (extension.isEmpty() || !extension.get().equals("m4a")) {
+            throw new RuntimeException("음성파일이 m4a 확장자가 아닙니다.");
+        }
+    }
 }
