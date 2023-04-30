@@ -64,15 +64,15 @@ jobs:
 
       - name: Make .env
         run: |
-          printf "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}\n\
+          echo "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}\n\
           MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}\n\
           ORACLE_CLOUD_BUCKET=${{ secrets.ORACLE_CLOUD_BUCKET }}\n\
           ORACLE_CLOUD_NAMESPACE=${{ secrets.ORACLE_CLOUD_NAMESPACE }}" > .env
 
       - name: Make oracle-cloud files
         run: |
-          printf "${{ secrets.ORACLE_CLOUD_CONFIG }}" > oracle-cloud-config
-          printf "${{ secrets.ORACLE_CLOUD_PRIVATE }}" > oracle-cloud-private.pem
+          echo "${{ secrets.ORACLE_CLOUD_CONFIG }}" > oracle-cloud-config
+          echo "${{ secrets.ORACLE_CLOUD_PRIVATE }}" > oracle-cloud-private.pem
 
       # 파일을 ssh를 통해 서버로 복사
       - name: Copy docker compose & scripts & env
