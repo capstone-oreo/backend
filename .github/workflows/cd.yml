@@ -63,7 +63,11 @@ jobs:
           services.spring.image: ghcr.io/${{ env.ORGANIZATION }}/${{ env.REPOSITORY }}:latest
 
       - name: Make .env
-        run: printf "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}\nMONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
+        run: |
+          printf "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}
+          MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+          ORACLE_CLOUD_BUCKET=${{ secrets.ORACLE_CLOUD_BUCKET }}
+          ORACLE_CLOUD_NAMESPACE=${{ secrets.ORACLE_CLOUD_NAMESPACE }}" >> .env
 
       # 파일을 ssh를 통해 서버로 복사
       - name: Copy docker compose & Scripts & Nginx
