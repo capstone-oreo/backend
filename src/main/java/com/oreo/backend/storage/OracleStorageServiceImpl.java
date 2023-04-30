@@ -1,6 +1,7 @@
 package com.oreo.backend.storage;
 
 import com.oracle.bmc.objectstorage.ObjectStorage;
+import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -27,16 +29,26 @@ public class OracleStorageServiceImpl implements StorageService {
 
     public String uploadVoice(MultipartFile file) throws IOException {
         validateM4aExtension(file.getOriginalFilename());
-        String fileName = "voice/" + UUID.randomUUID() + ".m4a";
+        String filename = "voice/" + UUID.randomUUID() + ".m4a";
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucketName(BUCKET)
                 .namespaceName(NAMESPACE)
-                .objectName(fileName)
+                .objectName(filename)
                 .putObjectBody(file.getInputStream())
                 .contentType("audio/x-m4a")
                 .build();
         objectStorage.putObject(request);
-        return URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+        return URLEncoder.encode(filename, StandardCharsets.UTF_8);
+    }
+
+    public void deleteVoice(String filename) {
+        String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+        DeleteObjectRequest request = DeleteObjectRequest.builder()
+                .bucketName(BUCKET)
+                .namespaceName(NAMESPACE)
+                .objectName(decodedFilename)
+                .build();
+        objectStorage.deleteObject(request);
     }
 
 //    public File download() throws IOException {

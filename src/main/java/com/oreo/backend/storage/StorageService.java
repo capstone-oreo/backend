@@ -6,4 +6,6 @@ import java.io.IOException;
 
 public interface StorageService {
     String uploadVoice(MultipartFile file) throws IOException;
+
+    void deleteVoice(String uri);
 }
