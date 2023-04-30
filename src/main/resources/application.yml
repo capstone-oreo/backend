@@ -1,8 +1,13 @@
 spring:
   profiles:
-    active: "local"
+    default: "local"
     group:
-      "build": "secret"
+      local:
+        - "local"
+        - "secret"
+  servlet:
+    multipart:
+      max-file-size: 100000KB
 logging:
   exception-conversion-word: '%wEx'
   pattern:

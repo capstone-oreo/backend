@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 **/.env
 **/application-secret.yml
+oracle-cloud-*
 
 ### STS ###
 .apt_generated

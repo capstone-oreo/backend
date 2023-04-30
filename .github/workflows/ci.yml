@@ -19,6 +19,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Make oracle-cloud files
+        run: |
+          echo "${{ secrets.ORACLE_CLOUD_CONFIG }}" > oracle-cloud-config
+          echo "${{ secrets.ORACLE_CLOUD_PRIVATE }}" > oracle-cloud-private.pem
+
       - name: Test
         run: chmod +x gradlew && ./gradlew clean test
 
