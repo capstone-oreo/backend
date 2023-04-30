@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -45,6 +46,30 @@ class OracleStorageServiceImplTest {
 
             //then
             assertThat(uri).containsPattern("^voice/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.m4a$");
+        }
+
+        @Test
+        @DisplayName("m4a 확장자가 아닌 파일은 예외가 발생한다.")
+        void NotM4aExtension() {
+            //given
+            MultipartFile mockFile = mock(MultipartFile.class);
+            given(mockFile.getOriginalFilename()).willReturn("test.mp3");
+
+            //when
+            //then
+            assertThrows(RuntimeException.class, () -> storageService.uploadVoice(mockFile));
+        }
+
+        @Test
+        @DisplayName("확장자가 없는 파일은 예외가 발생한다.")
+        void emptyExtension() {
+            //given
+            MultipartFile mockFile = mock(MultipartFile.class);
+            given(mockFile.getOriginalFilename()).willReturn("mp3m4a");
+
+            //when
+            //then
+            assertThrows(RuntimeException.class, () -> storageService.uploadVoice(mockFile));
         }
     }
 }
