@@ -8,3 +8,7 @@ de:
     mongodb:
       embedded:
         version: 5.0.5
+oracle:
+  cloud:
+    bucket: test
+    namespace: test
