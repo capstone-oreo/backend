@@ -64,9 +64,9 @@ jobs:
 
       - name: Make .env
         run: |
-          echo "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}\n\
-          MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}\n\
-          ORACLE_CLOUD_BUCKET=${{ secrets.ORACLE_CLOUD_BUCKET }}\n\
+          echo "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}
+          MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+          ORACLE_CLOUD_BUCKET=${{ secrets.ORACLE_CLOUD_BUCKET }}
           ORACLE_CLOUD_NAMESPACE=${{ secrets.ORACLE_CLOUD_NAMESPACE }}" > .env
 
       - name: Make oracle-cloud files
