@@ -2,10 +2,13 @@ package com.oreo.backend.file.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
@@ -58,6 +62,33 @@ class FileServiceTest {
 
             //then
             assertThat(result).isEqualTo(texts);
+        }
+
+        @Test
+        @DisplayName("유효하지 않은 파일은 예외가 발생한다.")
+        void invalidFile() throws IOException {
+            // given
+            MultipartFile mockFile = mock(MultipartFile.class);
+            given(mockFile.getBytes()).willThrow(IOException.class);
+
+            // when
+            assertThrows(RuntimeException.class, () -> fileService.analyzeVoiceFile(mockFile));
+        }
+
+        @Test
+        @DisplayName("API 요청에 실패하면 예외가 발생한다.")
+        void failApiRequest() {
+            //given
+            List<String> texts = List.of("hello", "world");
+            MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
+                "test data".getBytes());
+            ResponseEntity<Object> response = ResponseEntity.internalServerError().build();
+            given(
+                restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
+                    any(ParameterizedTypeReference.class))).willReturn(response);
+
+            //when
+            assertThrows(RuntimeException.class, () -> fileService.analyzeVoiceFile(mockFile));
         }
     }
 }
