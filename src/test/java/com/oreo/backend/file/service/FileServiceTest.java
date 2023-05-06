@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
 
+    @InjectMocks
     FileService fileService;
 
     @Mock
@@ -35,12 +37,6 @@ class FileServiceTest {
 
     @Mock
     RestTemplateBuilder restTemplateBuilder;
-
-    @BeforeEach
-    void setUp() {
-        given(restTemplateBuilder.build()).willReturn(restTemplate);
-        fileService = new FileService(restTemplateBuilder);
-    }
 
     @Nested
     class AnalyzeVoiceFile {
@@ -53,6 +49,7 @@ class FileServiceTest {
             MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
                 "test data".getBytes());
             ResponseEntity<List<String>> response = ResponseEntity.ok(texts);
+            given(restTemplateBuilder.build()).willReturn(restTemplate);
             given(
                 restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
                     any(ParameterizedTypeReference.class))).willReturn(response);
@@ -83,6 +80,7 @@ class FileServiceTest {
             MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
                 "test data".getBytes());
             ResponseEntity<Object> response = ResponseEntity.internalServerError().build();
+            given(restTemplateBuilder.build()).willReturn(restTemplate);
             given(
                 restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
                     any(ParameterizedTypeReference.class))).willReturn(response);

@@ -2,6 +2,7 @@ package com.oreo.backend.file.service;
 
 import java.io.IOException;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
@@ -17,13 +18,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@RequiredArgsConstructor
 public class FileService {
 
-    private final RestTemplate restTemplate;
-
-    public FileService(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplate = restTemplateBuilder.build();
-    }
+    private final RestTemplateBuilder restTemplateBuilder;
 
     // python으로 음성 파일을 전달하고 분석 결과를 얻는다.
     public List<String> analyzeVoiceFile(MultipartFile file) {
@@ -43,7 +41,7 @@ public class FileService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<List<String>> response = restTemplate.exchange("http://flask:8000/stt",
+        ResponseEntity<List<String>> response = restTemplateBuilder.build().exchange("http://flask:8000/stt",
             HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
             });
         if (!response.getStatusCode().is2xxSuccessful()) {
