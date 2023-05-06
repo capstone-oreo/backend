@@ -25,14 +25,13 @@ public class FileService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-
     // python으로 음성 파일을 전달하고 분석 결과를 얻는다.
     public List<String> analyzeVoiceFile(MultipartFile file) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         try {
-            ByteArrayResource contentsAsResource = new ByteArrayResource(file.getBytes()){
+            ByteArrayResource contentsAsResource = new ByteArrayResource(file.getBytes()) {
                 @Override
-                public String getFilename(){
+                public String getFilename() {
                     return file.getOriginalFilename();
                 }
             };
