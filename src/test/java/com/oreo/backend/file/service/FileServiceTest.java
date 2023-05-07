@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import com.oreo.backend.file.exception.InvalidFileException;
+import com.oreo.backend.file.exception.SttRequestException;
 import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +71,7 @@ class FileServiceTest {
             given(mockFile.getBytes()).willThrow(IOException.class);
 
             // when
-            assertThrows(RuntimeException.class, () -> fileService.analyzeVoiceFile(mockFile));
+            assertThrows(InvalidFileException.class, () -> fileService.analyzeVoiceFile(mockFile));
         }
 
         @Test
@@ -86,7 +88,7 @@ class FileServiceTest {
                     any(ParameterizedTypeReference.class))).willReturn(response);
 
             //when
-            assertThrows(RuntimeException.class, () -> fileService.analyzeVoiceFile(mockFile));
+            assertThrows(SttRequestException.class, () -> fileService.analyzeVoiceFile(mockFile));
         }
     }
 }

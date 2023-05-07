@@ -7,7 +7,9 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR("1000"),
     RUNTIME_ERROR("1001"),
     VALIDATE_EXCEPTION("1002"),
-    TYPE_MISMATCH("1003");
+    TYPE_MISMATCH("1003"),
+    STT_REQUEST("1004"),
+    INVALID_FILE("1005");
 
     private final String errorCode;
 

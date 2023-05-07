@@ -1,5 +1,7 @@
 package com.oreo.backend.file.service;
 
+import com.oreo.backend.file.exception.InvalidFileException;
+import com.oreo.backend.file.exception.SttRequestException;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -35,17 +36,18 @@ public class FileService {
             };
             body.add("file", contentsAsResource);
         } catch (IOException e) {
-            throw new RuntimeException("유효하지 않은 파일입니다.");
+            throw new InvalidFileException("유효하지 않은 파일입니다.");
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<List<String>> response = restTemplateBuilder.build().exchange("http://flask:8000/stt",
-            HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {
-            });
+        ResponseEntity<List<String>> response = restTemplateBuilder.build()
+            .exchange("http://flask:8000/stt", HttpMethod.POST, requestEntity,
+                new ParameterizedTypeReference<>() {
+                });
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("STT 변환에 실패했습니다.");
+            throw new SttRequestException("STT 요청에 실패했습니다.");
         }
         return response.getBody();
     }
