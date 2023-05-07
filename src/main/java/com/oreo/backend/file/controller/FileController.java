@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class FileController {
     private final FileService fileService;
     private final FileRepository fileRepository;
 
-    @PostMapping("/files")
+    @PostMapping(value = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> saveFile(@RequestPart(name = "file") MultipartFile file) {
         List<String> messages = fileService.analyzeVoiceFile(file);
         return ResponseEntity.ok(messages);
@@ -35,7 +36,7 @@ public class FileController {
         return fileRepository.findAll();
     }
 
-    @PostMapping("/files-test")
+    @PostMapping(value = "/files-test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> saveFileTest(@RequestPart(name = "file") MultipartFile file) {
         try {
             if (file.getSize() <= 0) {
