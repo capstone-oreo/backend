@@ -1,10 +1,13 @@
 package com.oreo.backend.file.controller;
 
 import com.oreo.backend.file.document.File;
+import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.file.service.FileService;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +25,7 @@ public class FileController {
     private final FileRepository fileRepository;
 
     @PostMapping("/files")
-    public ResponseEntity<?> saveFile(@RequestPart(name="file") MultipartFile file) {
+    public ResponseEntity<?> saveFile(@RequestPart(name = "file") MultipartFile file) {
         List<String> messages = fileService.analyzeVoiceFile(file);
         return ResponseEntity.ok(messages);
     }
@@ -30,5 +33,23 @@ public class FileController {
     @GetMapping("/files")
     public List<File> findFile() {
         return fileRepository.findAll();
+    }
+
+    @PostMapping("/files-test")
+    public ResponseEntity<?> saveFileTest(@RequestPart(name = "file") MultipartFile file) {
+        try {
+            if (file.getSize() <= 0) {
+                throw new IOException();
+            }
+            ByteArrayResource contentsAsResource = new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            };
+        } catch (IOException e) {
+            throw new InvalidFileException("유효하지 않은 파일입니다.");
+        }
+        return ResponseEntity.ok(file.getOriginalFilename());
     }
 }
