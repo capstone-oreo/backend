@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 
 @Configuration
-public class Oracle {
+public class OracleConfig {
 
     @Bean
     public ObjectStorage getObjectStorage() throws IOException {
