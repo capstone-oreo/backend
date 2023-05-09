@@ -1,16 +1,21 @@
 package com.oreo.backend.file.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.oreo.backend.config.MongoConfig;
 import com.oreo.backend.file.document.File;
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @DataMongoTest
+@Import(MongoConfig.class)
 class FileRepositoryTest {
 
     @Autowired
@@ -34,5 +39,27 @@ class FileRepositoryTest {
         assertThat(files).hasSize(1);
         assertThat(files.get(0)).usingRecursiveComparison()
             .isEqualTo(inserted);
+    }
+
+    @Test
+    @DisplayName("uri에 빈값이 들어갈 수 없다.")
+    void uriNotNull() {
+        //given
+        File file = new File("", "title");
+
+        //when
+        //then
+        assertThrows(ConstraintViolationException.class, () -> fileRepository.insert(file));
+    }
+
+    @Test
+    @DisplayName("title에 빈값이 들어갈 수 없다.")
+    void titleNotNull() {
+        //given
+        File file = new File("uri", "");
+
+        //when
+        //then
+        assertThrows(ConstraintViolationException.class, () -> fileRepository.insert(file));
     }
 }
