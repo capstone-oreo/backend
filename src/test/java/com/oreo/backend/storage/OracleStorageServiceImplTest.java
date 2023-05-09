@@ -36,8 +36,8 @@ class OracleStorageServiceImplTest {
     class UploadVoice {
 
         @Test
-        @DisplayName("음성 파일을 storage에 uuid로 저장한다.")
-        void uploadVoiceInStorage() throws IOException {
+        @DisplayName("m4a 음성 파일을 storage에 uuid로 저장한다.")
+        void uploadVoiceM4aInStorage() throws IOException {
             //given
             MultipartFile mockFile = mock(MultipartFile.class);
             given(mockFile.getOriginalFilename()).willReturn("test.m4a");
@@ -54,11 +54,29 @@ class OracleStorageServiceImplTest {
         }
 
         @Test
-        @DisplayName("m4a 확장자가 아닌 파일은 예외가 발생한다.")
-        void NotM4aExtension() {
+        @DisplayName("mp3 음성 파일을 storage에 uuid로 저장한다.")
+        void uploadVoiceMp3InStorage() throws IOException {
             //given
             MultipartFile mockFile = mock(MultipartFile.class);
             given(mockFile.getOriginalFilename()).willReturn("test.mp3");
+            given(mockFile.getInputStream()).willReturn(mock(InputStream.class));
+            given(objectStorage.putObject(any(PutObjectRequest.class))).willReturn(
+                mock(PutObjectResponse.class));
+
+            //when
+            String uri = storageService.uploadVoice(mockFile);
+
+            //then
+            assertThat(uri).containsPattern(
+                "^voice%2F[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.mp3$");
+        }
+
+        @Test
+        @DisplayName("음성 파일 확장자가 아닌 파일은 예외가 발생한다.")
+        void NotM4aExtension() {
+            //given
+            MultipartFile mockFile = mock(MultipartFile.class);
+            given(mockFile.getOriginalFilename()).willReturn("test.mp4");
 
             //when
             //then
@@ -82,7 +100,7 @@ class OracleStorageServiceImplTest {
         void InvalidGetInputStream() throws IOException {
             //given
             MultipartFile mockFile = mock(MultipartFile.class);
-            given(mockFile.getOriginalFilename()).willReturn("test.m4a");
+            given(mockFile.getOriginalFilename()).willReturn("test.flac");
             given(mockFile.getInputStream()).willThrow(IOException.class);
 
             //when
