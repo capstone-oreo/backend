@@ -28,12 +28,6 @@ public class FileIntegrationTest extends IntegrationTest {
     @Autowired
     FileRepository fileRepository;
 
-    @MockBean
-    ObjectStorage objectStorage;
-
-    @MockBean
-    RestTemplateBuilder restTemplateBuilder;
-
     @Test
     @DisplayName("POST /api/files")
     void postFiles() throws Exception {
