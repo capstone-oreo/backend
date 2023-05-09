@@ -7,16 +7,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
+import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.exception.SttRequestException;
+import com.oreo.backend.file.repository.FileRepository;
 import java.io.IOException;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,10 +38,46 @@ class FileServiceTest {
     FileService fileService;
 
     @Mock
+    FileRepository fileRepository;
+
+    @Mock
     RestTemplate restTemplate;
 
     @Mock
     RestTemplateBuilder restTemplateBuilder;
+
+    @Nested
+    class SaveFile {
+
+        @Test
+        @DisplayName("uri와 제목을 저장한다.")
+        void saveFile() {
+            //given
+            String uri = "aabb.com";
+            String title = "file title";
+            String id = "13981a980s1";
+            File mockFile = mock(File.class);
+
+            given(fileRepository.save(any(File.class))).willReturn(mockFile);
+            given(mockFile.getId()).willReturn(id);
+
+            //when
+            String savedId = fileService.saveFile(uri, title);
+
+            //then
+            assertThat(savedId).isEqualTo(id);
+            verifyFile(uri, title);
+        }
+
+        private void verifyFile(String uri, String title) {
+            ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
+            verify(fileRepository).save(fileCaptor.capture());
+            File file = fileCaptor.getValue();
+            assertThat(file.getUri()).isEqualTo(uri);
+            assertThat(file.getTitle()).isEqualTo(title);
+        }
+
+    }
 
     @Nested
     class AnalyzeVoiceFile {
