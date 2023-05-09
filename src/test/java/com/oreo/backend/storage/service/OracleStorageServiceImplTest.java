@@ -12,6 +12,7 @@ import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import com.oracle.bmc.objectstorage.responses.DeleteObjectResponse;
 import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
 import com.oreo.backend.file.exception.InvalidFileException;
+import com.oreo.backend.storage.exception.InvalidFileExtensionException;
 import com.oreo.backend.storage.service.OracleStorageServiceImpl;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,7 +82,7 @@ class OracleStorageServiceImplTest {
 
             //when
             //then
-            assertThrows(RuntimeException.class, () -> storageService.uploadVoice(mockFile));
+            assertThrows(InvalidFileExtensionException.class, () -> storageService.uploadVoice(mockFile));
         }
 
         @Test
@@ -93,7 +94,7 @@ class OracleStorageServiceImplTest {
 
             //when
             //then
-            assertThrows(RuntimeException.class, () -> storageService.uploadVoice(mockFile));
+            assertThrows(InvalidFileExtensionException.class, () -> storageService.uploadVoice(mockFile));
         }
 
         @Test

@@ -4,6 +4,7 @@ import com.oracle.bmc.objectstorage.ObjectStorage;
 import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import com.oreo.backend.file.exception.InvalidFileException;
+import com.oreo.backend.storage.exception.InvalidFileExtensionException;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -76,7 +77,7 @@ public class OracleStorageServiceImpl implements StorageService {
             .map(f -> f.substring(fileName.lastIndexOf(".") + 1));
 
         if (extension.isEmpty() || !FILE_EXTENSIONS.contains(extension.get())) {
-            throw new RuntimeException(
+            throw new InvalidFileExtensionException(
                 "음성파일은 'wav', 'ogg', 'mp3', 'm4a', 'flac' 확장자만 가능합니다.");
         }
         return extension.get();
