@@ -1,10 +1,19 @@
 package com.oreo.backend.storage;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 import com.oracle.bmc.objectstorage.ObjectStorage;
 import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import com.oracle.bmc.objectstorage.responses.DeleteObjectResponse;
 import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
+import com.oreo.backend.file.exception.InvalidFileException;
+import java.io.IOException;
+import java.io.InputStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,15 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class OracleStorageServiceImplTest {
@@ -34,6 +34,7 @@ class OracleStorageServiceImplTest {
 
     @Nested
     class UploadVoice {
+
         @Test
         @DisplayName("음성 파일을 storage에 uuid로 저장한다.")
         void uploadVoiceInStorage() throws IOException {
@@ -41,13 +42,15 @@ class OracleStorageServiceImplTest {
             MultipartFile mockFile = mock(MultipartFile.class);
             given(mockFile.getOriginalFilename()).willReturn("test.m4a");
             given(mockFile.getInputStream()).willReturn(mock(InputStream.class));
-            given(objectStorage.putObject(any(PutObjectRequest.class))).willReturn(mock(PutObjectResponse.class));
+            given(objectStorage.putObject(any(PutObjectRequest.class))).willReturn(
+                mock(PutObjectResponse.class));
 
             //when
             String uri = storageService.uploadVoice(mockFile);
 
             //then
-            assertThat(uri).containsPattern("^voice%2F[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.m4a$");
+            assertThat(uri).containsPattern(
+                "^voice%2F[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.m4a$");
         }
 
         @Test
@@ -73,16 +76,31 @@ class OracleStorageServiceImplTest {
             //then
             assertThrows(RuntimeException.class, () -> storageService.uploadVoice(mockFile));
         }
+
+        @Test
+        @DisplayName("getInputStream에서 발생한 예외를 처리한다.")
+        void InvalidGetInputStream() throws IOException {
+            //given
+            MultipartFile mockFile = mock(MultipartFile.class);
+            given(mockFile.getOriginalFilename()).willReturn("test.m4a");
+            given(mockFile.getInputStream()).willThrow(IOException.class);
+
+            //when
+            //then
+            assertThrows(InvalidFileException.class, () -> storageService.uploadVoice(mockFile));
+        }
     }
-    
+
     @Nested
     class DeleteVoice {
+
         @Test
         @DisplayName("파일 이름으로 storage의 파일을 삭제한다.")
         void deleteFile() {
             //given
             String filename = "voice%2Faaaabbb.m4a";
-            given(objectStorage.deleteObject(any(DeleteObjectRequest.class))).willReturn(mock(DeleteObjectResponse.class));
+            given(objectStorage.deleteObject(any(DeleteObjectRequest.class))).willReturn(
+                mock(DeleteObjectResponse.class));
 
             //when
             storageService.deleteVoice(filename);
