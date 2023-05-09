@@ -1,4 +1,4 @@
-package com.oreo.backend.storage;
+package com.oreo.backend.storage.service;
 
 import org.springframework.web.multipart.MultipartFile;
 

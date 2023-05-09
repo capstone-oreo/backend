@@ -1,4 +1,4 @@
-package com.oreo.backend.storage;
+package com.oreo.backend.storage.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,6 +12,7 @@ import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import com.oracle.bmc.objectstorage.responses.DeleteObjectResponse;
 import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
 import com.oreo.backend.file.exception.InvalidFileException;
+import com.oreo.backend.storage.service.OracleStorageServiceImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.DisplayName;

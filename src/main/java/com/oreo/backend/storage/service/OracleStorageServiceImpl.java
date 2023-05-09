@@ -1,4 +1,4 @@
-package com.oreo.backend.storage;
+package com.oreo.backend.storage.service;
 
 import com.oracle.bmc.objectstorage.ObjectStorage;
 import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
