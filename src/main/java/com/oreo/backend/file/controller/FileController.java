@@ -4,6 +4,7 @@ import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.file.service.FileService;
+import com.oreo.backend.storage.StorageService;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,20 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileController {
 
     private final FileService fileService;
+    private final StorageService storageService;
     private final FileRepository fileRepository;
 
     @PostMapping(value = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveFile(@RequestPart(name = "file") MultipartFile file) {
-        List<String> messages = fileService.analyzeVoiceFile(file);
-        return ResponseEntity.ok(messages);
+    public ResponseEntity<String> saveFile(@RequestPart(name = "file") MultipartFile file,
+        @RequestPart(name = "title") String title) {
+//        분석 내용 저장 추가
+//        Object messages = fileService.analyzeVoiceFile(file);
+//        ...
+
+        String uri = storageService.uploadVoice(file);
+        String id = fileService.saveFile(uri, title);
+
+        return ResponseEntity.ok(id);
     }
 
     @GetMapping("/files")
