@@ -77,7 +77,7 @@ public class OracleStorageServiceImpl implements StorageService {
 
         if (extension.isEmpty() || !FILE_EXTENSIONS.contains(extension.get())) {
             throw new RuntimeException(
-                "음성파일은 \"wav\", \"ogg\", \"mp3\", \"m4a\", \"flac\" 확장자만 가능합니다.");
+                "음성파일은 'wav', 'ogg', 'mp3', 'm4a', 'flac' 확장자만 가능합니다.");
         }
         return extension.get();
     }
