@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,10 +30,7 @@ public class FileController {
 
     @PostMapping(value = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> saveFile(@RequestPart(name = "file") MultipartFile file,
-        @RequestPart(name = "title") String title) {
-//        분석 내용 저장 추가
-//        Object messages = fileService.analyzeVoiceFile(file);
-//        ...
+        @RequestParam(name = "title") String title) {
 
         String uri = storageService.uploadVoice(file);
         String id = fileService.saveFile(uri, title);
