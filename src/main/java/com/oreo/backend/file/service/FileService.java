@@ -14,17 +14,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class FileService {
 
     private final RestTemplateBuilder restTemplateBuilder;
 
+
     // python으로 음성 파일을 전달하고 분석 결과를 얻는다.
+    @Transactional(readOnly = true)
     public List<String> analyzeVoiceFile(MultipartFile file) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         try {
