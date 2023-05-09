@@ -4,7 +4,7 @@ import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.file.service.FileService;
-import com.oreo.backend.storage.StorageService;
+import com.oreo.backend.storage.service.StorageService;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
