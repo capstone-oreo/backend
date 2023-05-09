@@ -1,29 +1,35 @@
 package com.oreo.backend.file.integration;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.oracle.bmc.objectstorage.ObjectStorage;
+import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
+import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
 import com.oreo.backend.IntegrationTest;
-import java.util.List;
+import com.oreo.backend.file.document.File;
+import com.oreo.backend.file.repository.FileRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.client.RestTemplate;
 
 public class FileIntegrationTest extends IntegrationTest {
+
+    @Autowired
+    FileRepository fileRepository;
+
+    @MockBean
+    ObjectStorage objectStorage;
 
     @MockBean
     RestTemplateBuilder restTemplateBuilder;
@@ -33,27 +39,33 @@ public class FileIntegrationTest extends IntegrationTest {
     void postFiles() throws Exception {
         //given
         String uri = "/api/files";
-        List<String> texts = List.of("hello", "world");
-
-        RestTemplate restTemplate = mock(RestTemplate.class);
-        given(restTemplateBuilder.build()).willReturn(restTemplate);
+        String title = "file title";
+//        List<String> texts = List.of("hello", "world");
 
         MockMultipartFile mockFile = new MockMultipartFile("file", "test.wav", "audio/wav",
             "test data".getBytes());
 
-        ResponseEntity<List<String>> response = ResponseEntity.ok(texts);
-        given(
-            restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
-                any(ParameterizedTypeReference.class))).willReturn(response);
+        given(objectStorage.putObject(any(PutObjectRequest.class))).willReturn(
+            mock(PutObjectResponse.class));
+//        RestTemplate restTemplate = mock(RestTemplate.class);
+//        given(restTemplateBuilder.build()).willReturn(restTemplate);
+//
+//        ResponseEntity<List<String>> response = ResponseEntity.ok(texts);
+//        given(
+//            restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
+//                any(ParameterizedTypeReference.class))).willReturn(response);
 
         //when
-        ResultActions actions = mockMvc.perform(multipart(uri).file(mockFile));
-        System.out.println(actions.andReturn().getResponse().getContentAsString());
+        ResultActions actions = mockMvc.perform(
+            multipart(uri).file(mockFile).param("title", title));
 
         //then
         actions.andExpect(status().isOk())
-            .andExpect(jsonPath("$.[0]").value(texts.get(0)))
-            .andExpect(jsonPath("$.[1]").value(texts.get(1)))
+            .andExpect(result -> {
+                String id = result.getResponse().getContentAsString();
+                File file = fileRepository.findById(id).orElseThrow();
+                assertThat(file.getTitle()).isEqualTo(title);
+            })
             .andDo(print());
     }
 
