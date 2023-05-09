@@ -3,6 +3,7 @@ package com.oreo.backend.storage;
 import com.oracle.bmc.objectstorage.ObjectStorage;
 import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
+import com.oreo.backend.file.exception.InvalidFileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,17 +28,22 @@ public class OracleStorageServiceImpl implements StorageService {
 
     private final ObjectStorage objectStorage;
 
-    public String uploadVoice(MultipartFile file) throws IOException {
+    public String uploadVoice(MultipartFile file) {
         validateM4aExtension(file.getOriginalFilename());
         String filename = "voice/" + UUID.randomUUID() + ".m4a";
-        PutObjectRequest request = PutObjectRequest.builder()
+        try{
+            PutObjectRequest request = PutObjectRequest.builder()
                 .bucketName(BUCKET)
                 .namespaceName(NAMESPACE)
                 .objectName(filename)
                 .putObjectBody(file.getInputStream())
                 .contentType("audio/x-m4a")
                 .build();
-        objectStorage.putObject(request);
+            objectStorage.putObject(request);
+        } catch (IOException e){
+            throw new InvalidFileException("유효하지 않은 파일입니다.");
+        }
+
         return URLEncoder.encode(filename, StandardCharsets.UTF_8);
     }
 
