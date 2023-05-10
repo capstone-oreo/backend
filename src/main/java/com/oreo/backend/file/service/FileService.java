@@ -16,7 +16,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,8 +27,8 @@ public class FileService {
     private final FileRepository fileRepository;
     private final RestTemplateBuilder restTemplateBuilder;
 
-    public String saveFile(String uri, String filename) {
-        File savedFile = fileRepository.save(new File(uri, filename));
+    public String saveFile(String postUri, String filename) {
+        File savedFile = fileRepository.save(new File(postUri, filename));
         return savedFile.getId();
     }
 

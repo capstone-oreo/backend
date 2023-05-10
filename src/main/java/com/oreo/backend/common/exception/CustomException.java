@@ -1,4 +1,4 @@
-package com.oreo.backend.exception;
+package com.oreo.backend.common.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

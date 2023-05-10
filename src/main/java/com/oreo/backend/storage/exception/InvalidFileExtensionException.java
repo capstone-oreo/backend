@@ -1,7 +1,7 @@
 package com.oreo.backend.storage.exception;
 
-import com.oreo.backend.exception.CustomException;
-import com.oreo.backend.exception.ErrorCode;
+import com.oreo.backend.common.exception.CustomException;
+import com.oreo.backend.common.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 
 public class InvalidFileExtensionException extends CustomException {

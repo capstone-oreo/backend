@@ -1,4 +1,4 @@
-package com.oreo.backend.config;
+package com.oreo.backend.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
