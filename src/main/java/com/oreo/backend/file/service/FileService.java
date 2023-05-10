@@ -22,7 +22,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class FileService {
 
@@ -35,7 +34,6 @@ public class FileService {
     }
 
     // python으로 음성 파일을 전달하고 분석 결과를 얻는다.
-    @Transactional(readOnly = true)
     public List<String> analyzeVoiceFile(MultipartFile file) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         try {
