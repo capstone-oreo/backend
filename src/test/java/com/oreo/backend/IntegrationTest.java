@@ -1,6 +1,8 @@
 package com.oreo.backend;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.oracle.bmc.objectstorage.ObjectStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,4 +26,9 @@ public abstract class IntegrationTest {
 
     @MockBean
     public RestTemplateBuilder restTemplateBuilder;
+
+    public Object asParsedJson(Object obj) throws JsonProcessingException {
+        String json = new ObjectMapper().writeValueAsString(obj);
+        return JsonPath.read(json, "$");
+    }
 }
