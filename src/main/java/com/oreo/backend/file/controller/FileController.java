@@ -4,6 +4,7 @@ import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.file.service.FileService;
+import com.oreo.backend.storage.service.StorageService;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,12 +25,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileController {
 
     private final FileService fileService;
+    private final StorageService storageService;
     private final FileRepository fileRepository;
 
     @PostMapping(value = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveFile(@RequestPart(name = "file") MultipartFile file) {
-        List<String> messages = fileService.analyzeVoiceFile(file);
-        return ResponseEntity.ok(messages);
+    public ResponseEntity<String> saveFile(@RequestPart(name = "file") MultipartFile file,
+        @RequestParam(name = "title") String title) {
+
+        String uri = storageService.uploadVoice(file);
+        String id = fileService.saveFile(uri, title);
+
+        return ResponseEntity.ok(id);
     }
 
     @GetMapping("/files")

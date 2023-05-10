@@ -1,19 +1,21 @@
-package com.oreo.backend.storage;
+package com.oreo.backend.storage.service;
 
 import com.oracle.bmc.objectstorage.ObjectStorage;
 import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.oreo.backend.file.exception.InvalidFileException;
+import com.oreo.backend.storage.exception.InvalidFileExtensionException;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -27,27 +29,34 @@ public class OracleStorageServiceImpl implements StorageService {
 
     private final ObjectStorage objectStorage;
 
-    public String uploadVoice(MultipartFile file) throws IOException {
-        validateM4aExtension(file.getOriginalFilename());
-        String filename = "voice/" + UUID.randomUUID() + ".m4a";
-        PutObjectRequest request = PutObjectRequest.builder()
+    private final List<String> FILE_EXTENSIONS = List.of("wav", "ogg", "mp3", "m4a", "flac");
+
+    public String uploadVoice(MultipartFile file) {
+        String extension = getValidExtension(file.getOriginalFilename());
+        String filename = "voice/" + UUID.randomUUID() + "." + extension;
+        try {
+            PutObjectRequest request = PutObjectRequest.builder()
                 .bucketName(BUCKET)
                 .namespaceName(NAMESPACE)
                 .objectName(filename)
                 .putObjectBody(file.getInputStream())
-                .contentType("audio/x-m4a")
+                .contentType("audio/" + (extension.equals("m4a") ? "x-m4a" : extension))
                 .build();
-        objectStorage.putObject(request);
+            objectStorage.putObject(request);
+        } catch (IOException e) {
+            throw new InvalidFileException("유효하지 않은 파일입니다.");
+        }
+
         return URLEncoder.encode(filename, StandardCharsets.UTF_8);
     }
 
     public void deleteVoice(String filename) {
         String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         DeleteObjectRequest request = DeleteObjectRequest.builder()
-                .bucketName(BUCKET)
-                .namespaceName(NAMESPACE)
-                .objectName(decodedFilename)
-                .build();
+            .bucketName(BUCKET)
+            .namespaceName(NAMESPACE)
+            .objectName(decodedFilename)
+            .build();
         objectStorage.deleteObject(request);
     }
 
@@ -63,12 +72,14 @@ public class OracleStorageServiceImpl implements StorageService {
 //        GetObjectResponse getObjectResponse = objectStorage.getObject(getObjectRequest);
 //    }
 
-    private void validateM4aExtension(String fileName) {
+    private String getValidExtension(String fileName) {
         Optional<String> extension = Optional.ofNullable(fileName).filter(f -> f.contains("."))
-                .map(f -> f.substring(fileName.lastIndexOf(".") + 1));
+            .map(f -> f.substring(fileName.lastIndexOf(".") + 1));
 
-        if (extension.isEmpty() || !extension.get().equals("m4a")) {
-            throw new RuntimeException("음성파일이 m4a 확장자가 아닙니다.");
+        if (extension.isEmpty() || !FILE_EXTENSIONS.contains(extension.get())) {
+            throw new InvalidFileExtensionException(
+                "음성파일은 'wav', 'ogg', 'mp3', 'm4a', 'flac' 확장자만 가능합니다.");
         }
+        return extension.get();
     }
 }
