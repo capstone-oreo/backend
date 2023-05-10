@@ -1,14 +1,17 @@
 package com.oreo.backend.file.controller;
 
-import com.oreo.backend.file.document.File;
+import com.oreo.backend.common.dto.PageResponse;
+import com.oreo.backend.file.dto.response.FileResponse;
 import com.oreo.backend.file.exception.InvalidFileException;
-import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.file.service.FileService;
 import com.oreo.backend.storage.service.StorageService;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.io.IOException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +29,6 @@ public class FileController {
 
     private final FileService fileService;
     private final StorageService storageService;
-    private final FileRepository fileRepository;
 
     @PostMapping(value = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> saveFile(@RequestPart(name = "file") MultipartFile file,
@@ -39,8 +41,10 @@ public class FileController {
     }
 
     @GetMapping("/files")
-    public List<File> findFile() {
-        return fileRepository.findAll();
+    @PageableAsQueryParam
+    public PageResponse<FileResponse> findFile(
+        @Parameter(hidden = true) @PageableDefault Pageable pageable) {
+        return new PageResponse<>(fileService.findFiles(pageable));
     }
 
     @PostMapping(value = "/files-test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
