@@ -2,12 +2,12 @@ spring:
   data:
     mongodb:
       database: test
-      port: 0
+      port: 27018
 de:
   flapdoodle:
     mongodb:
       embedded:
-        version: 5.0.5
+        version: 6.0.2
 oracle:
   cloud:
     bucket: test
