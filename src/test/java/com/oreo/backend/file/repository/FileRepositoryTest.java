@@ -3,7 +3,7 @@ package com.oreo.backend.file.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.oreo.backend.config.MongoConfig;
+import com.oreo.backend.common.config.MongoConfig;
 import com.oreo.backend.file.document.File;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;

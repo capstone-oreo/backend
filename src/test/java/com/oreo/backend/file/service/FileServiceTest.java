@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.oreo.backend.file.document.File;
+import com.oreo.backend.file.dto.response.FileResponse;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.exception.SttRequestException;
 import com.oreo.backend.file.repository.FileRepository;
@@ -25,6 +26,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -76,7 +80,6 @@ class FileServiceTest {
             assertThat(file.getUri()).isEqualTo(uri);
             assertThat(file.getTitle()).isEqualTo(title);
         }
-
     }
 
     @Nested
@@ -128,6 +131,31 @@ class FileServiceTest {
 
             //when
             assertThrows(SttRequestException.class, () -> fileService.analyzeVoiceFile(mockFile));
+        }
+    }
+
+    @Nested
+    class FindFiles {
+
+        @Test
+        @DisplayName("File을 페이지네이션하여 조회한다.")
+        void findFilePagination() {
+            //given
+            long total = 10L;
+            File t1 = new File("a.com", "t1");
+            File t2 = new File("a.com", "t2");
+            List<File> files = List.of(t1, t2);
+            PageRequest pageRequest = PageRequest.of(1, 2);
+            given(fileRepository.findAll(pageRequest)).willReturn(
+                new PageImpl<>(files, pageRequest, total));
+
+            //when
+            Page<FileResponse> result = fileService.findFiles(pageRequest);
+
+            //then
+            assertThat(result.getTotalElements()).isEqualTo(total);
+            assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(
+                files.stream().map(FileResponse::new).toList());
         }
     }
 }

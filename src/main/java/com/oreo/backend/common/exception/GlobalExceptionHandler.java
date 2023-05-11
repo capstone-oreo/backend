@@ -1,4 +1,4 @@
-package com.oreo.backend.exception;
+package com.oreo.backend.common.exception;
 
 import java.util.ArrayList;
 import java.util.List;

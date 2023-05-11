@@ -1,6 +1,7 @@
 package com.oreo.backend.file.service;
 
 import com.oreo.backend.file.document.File;
+import com.oreo.backend.file.dto.response.FileResponse;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.exception.SttRequestException;
 import com.oreo.backend.file.repository.FileRepository;
@@ -10,32 +11,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class FileService {
+
+    public static final String PRE_URI = "https://objectstorage.ap-seoul-1.oraclecloud.com/n/cnkzdnklb8xy/b/oreo/o/";
 
     private final FileRepository fileRepository;
     private final RestTemplateBuilder restTemplateBuilder;
 
-    public String saveFile(String uri, String filename) {
-        File savedFile = fileRepository.save(new File(uri, filename));
+    public String saveFile(String postUri, String filename) {
+        File savedFile = fileRepository.save(new File(postUri, filename));
         return savedFile.getId();
     }
 
     // python으로 음성 파일을 전달하고 분석 결과를 얻는다.
-    @Transactional(readOnly = true)
     public List<String> analyzeVoiceFile(MultipartFile file) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         try {
@@ -61,5 +63,9 @@ public class FileService {
             throw new SttRequestException("STT 요청에 실패했습니다.");
         }
         return response.getBody();
+    }
+
+    public Page<FileResponse> findFiles(Pageable pageable) {
+        return fileRepository.findAll(pageable).map(FileResponse::new);
     }
 }

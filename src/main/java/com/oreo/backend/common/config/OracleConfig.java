@@ -1,4 +1,4 @@
-package com.oreo.backend.config;
+package com.oreo.backend.common.config;
 
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
