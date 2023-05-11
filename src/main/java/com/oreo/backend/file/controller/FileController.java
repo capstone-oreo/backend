@@ -6,6 +6,8 @@ import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.service.FileService;
 import com.oreo.backend.storage.service.StorageService;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
@@ -41,7 +43,14 @@ public class FileController {
     }
 
     @GetMapping("/files")
-    @PageableAsQueryParam
+    @Parameter(in = ParameterIn.QUERY
+        , description = "페이지 번호 (0..N)"
+        , name = "page"
+        , schema = @Schema(type = "integer", defaultValue = "0"))
+    @Parameter(in = ParameterIn.QUERY
+        , description = "페이지 당 요소의 개수"
+        , name = "size"
+        , schema = @Schema(type = "integer", defaultValue = "10"))
     public PageResponse<FileResponse> findFile(
         @Parameter(hidden = true) @PageableDefault Pageable pageable) {
         return new PageResponse<>(fileService.findFiles(pageable));
