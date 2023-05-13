@@ -1,11 +1,14 @@
 package com.oreo.backend.record.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 
+import com.oreo.backend.file.document.File;
 import com.oreo.backend.record.document.Record;
+import com.oreo.backend.record.dto.response.RecordResponse;
 import com.oreo.backend.record.exception.RecordNotFoundException;
 import com.oreo.backend.record.repository.RecordRepository;
 import java.util.Optional;
@@ -30,20 +33,23 @@ class RecordServiceTest {
     class DeleteRecord {
 
         @Test
-        @DisplayName("분석 기록을 삭제한다.")
+        @DisplayName("Record을 삭제한다.")
         void deleteRecord() {
             //given
             String fileId = "12345";
-            Record mockRecord = mock(Record.class);
-            given(recordRepository.findByFile_Id(fileId)).willReturn(Optional.of(mockRecord));
-            willDoNothing().given(recordRepository).delete(mockRecord);
+            Record record = new Record("text", null, null, null, null, mock(File.class));
+            given(recordRepository.findByFile_Id(fileId)).willReturn(Optional.of(record));
+            willDoNothing().given(recordRepository).delete(record);
 
             //when
-            recordService.deleteRecord(fileId);
+            RecordResponse result = recordService.deleteRecord(fileId);
+
+            //then
+            assertThat(result).usingRecursiveComparison().isEqualTo(new RecordResponse(record));
         }
 
         @Test
-        @DisplayName("record를 찾을 수 없으면 예외가 발생한다.")
+        @DisplayName("Record를 찾을 수 없으면 예외가 발생한다.")
         void cannotFindRecordByFileId() {
             //given
             String fileId = "12345";

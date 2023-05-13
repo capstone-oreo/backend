@@ -70,9 +70,10 @@ public class FileService {
         return fileRepository.findAll(pageable).map(FileResponse::new);
     }
 
-    public void deleteFile(String id) {
+    public FileResponse deleteFile(String id) {
         File file = fileRepository.findById(id)
             .orElseThrow(() -> new FileNotFoundException("파일을 찾을 수 없습니다."));
         fileRepository.delete(file);
+        return new FileResponse(file);
     }
 }

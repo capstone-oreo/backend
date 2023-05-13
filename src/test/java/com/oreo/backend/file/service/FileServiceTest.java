@@ -109,7 +109,7 @@ class FileServiceTest {
         }
 
         @Test
-        @DisplayName("유효하지 않은 파일은 예외가 발생한다.")
+        @DisplayName("유효하지 않은 file은 예외가 발생한다.")
         void invalidFile() throws IOException {
             // given
             MultipartFile mockFile = mock(MultipartFile.class);
@@ -166,20 +166,23 @@ class FileServiceTest {
     class DeleteFile {
 
         @Test
-        @DisplayName("파일을 삭제한다.")
+        @DisplayName("File을 삭제한다.")
         void deleteFile() {
             //given
             String fileId = "12345";
-            File mockFile = mock(File.class);
-            given(fileRepository.findById(fileId)).willReturn(Optional.of(mockFile));
-            willDoNothing().given(fileRepository).delete(mockFile);
+            File file = new File("aa.com", "title");
+            given(fileRepository.findById(fileId)).willReturn(Optional.of(file));
+            willDoNothing().given(fileRepository).delete(file);
 
             //when
-            fileService.deleteFile(fileId);
+            FileResponse result = fileService.deleteFile(fileId);
+
+            //then
+            assertThat(result).usingRecursiveComparison().isEqualTo(new FileResponse(file));
         }
 
         @Test
-        @DisplayName("파일를 찾을 수 없으면 예외가 발생한다.")
+        @DisplayName("File를 찾을 수 없으면 예외가 발생한다.")
         void cannotFindFileById() {
             //given
             String fileId = "12345";
