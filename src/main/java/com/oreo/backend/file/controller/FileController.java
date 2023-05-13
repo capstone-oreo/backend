@@ -73,7 +73,7 @@ public class FileController {
             if (file.getSize() <= 0) {
                 throw new IOException();
             }
-            ByteArrayResource contentsAsResource = new ByteArrayResource(file.getBytes()) {
+            new ByteArrayResource(file.getBytes()) {
                 @Override
                 public String getFilename() {
                     return file.getOriginalFilename();

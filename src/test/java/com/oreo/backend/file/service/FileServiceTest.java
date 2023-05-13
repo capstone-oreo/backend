@@ -123,7 +123,6 @@ class FileServiceTest {
         @DisplayName("API 요청에 실패하면 예외가 발생한다.")
         void failApiRequest() {
             //given
-            List<String> texts = List.of("hello", "world");
             MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
                 "test data".getBytes());
             ResponseEntity<Object> response = ResponseEntity.internalServerError().build();
