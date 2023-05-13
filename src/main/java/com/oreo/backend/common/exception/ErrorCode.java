@@ -11,7 +11,8 @@ public enum ErrorCode {
     STT_REQUEST("1004"),
     INVALID_FILE("1005"),
     INVALID_FILE_EXTENSION("1006"),
-    FILE_NOT_FOUND("1007");
+    FILE_NOT_FOUND("1007"),
+    RECORD_NOT_FOUND("1008");
 
     private final String errorCode;
 
