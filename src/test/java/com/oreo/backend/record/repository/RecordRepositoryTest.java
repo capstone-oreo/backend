@@ -6,6 +6,7 @@ import com.oreo.backend.common.config.MongoConfig;
 import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.record.document.Record;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,12 @@ public class RecordRepositoryTest {
             .text("hello")
             .file(savedFile).build();
         savedRecord = recordRepository.save(record);
+    }
+
+    @AfterEach
+    void tearDown() {
+        recordRepository.deleteAll();
+        fileRepository.deleteAll();
     }
 
     @Test

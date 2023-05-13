@@ -7,6 +7,7 @@ import com.oreo.backend.common.config.MongoConfig;
 import com.oreo.backend.file.document.File;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ class FileRepositoryTest {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @AfterEach
+    void tearDown() {
+        fileRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("File document를 저장한다.")
