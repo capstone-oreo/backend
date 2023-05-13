@@ -6,16 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.dto.response.FileResponse;
+import com.oreo.backend.file.exception.FileNotFoundException;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.exception.SttRequestException;
 import com.oreo.backend.file.repository.FileRepository;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -156,6 +159,35 @@ class FileServiceTest {
             assertThat(result.getTotalElements()).isEqualTo(total);
             assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(
                 files.stream().map(FileResponse::new).toList());
+        }
+    }
+
+    @Nested
+    class DeleteFile {
+
+        @Test
+        @DisplayName("파일을 삭제한다.")
+        void deleteFile() {
+            //given
+            String fileId = "12345";
+            File mockFile = mock(File.class);
+            given(fileRepository.findById(fileId)).willReturn(Optional.of(mockFile));
+            willDoNothing().given(fileRepository).delete(mockFile);
+
+            //when
+            fileService.deleteFile(fileId);
+        }
+
+        @Test
+        @DisplayName("파일를 찾을 수 없으면 예외가 발생한다.")
+        void cannotFindFileById() {
+            //given
+            String fileId = "12345";
+            given(fileRepository.findById(fileId)).willReturn(Optional.empty());
+
+            //when
+            //then
+            assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(fileId));
         }
     }
 }
