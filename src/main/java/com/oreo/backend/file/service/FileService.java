@@ -2,6 +2,7 @@ package com.oreo.backend.file.service;
 
 import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.dto.response.FileResponse;
+import com.oreo.backend.file.exception.FileNotFoundException;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.exception.SttRequestException;
 import com.oreo.backend.file.repository.FileRepository;
@@ -67,5 +68,11 @@ public class FileService {
 
     public Page<FileResponse> findFiles(Pageable pageable) {
         return fileRepository.findAll(pageable).map(FileResponse::new);
+    }
+
+    public void deleteFile(String id) {
+        File file = fileRepository.findById(id)
+            .orElseThrow(() -> new FileNotFoundException("파일을 찾을 수 없습니다."));
+        fileRepository.delete(file);
     }
 }
