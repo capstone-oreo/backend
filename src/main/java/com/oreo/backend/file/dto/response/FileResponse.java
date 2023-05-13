@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 public class FileResponse {
 
-    private String id;
-    private String uri;
-    private String title;
+    private final String id;
+    private final String uri;
+    private final String title;
 
     public FileResponse(File file) {
         this.id = file.getId();
