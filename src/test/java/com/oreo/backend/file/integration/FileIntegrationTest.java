@@ -6,18 +6,23 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
 import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
+import com.oracle.bmc.objectstorage.responses.DeleteObjectResponse;
 import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
 import com.oreo.backend.IntegrationTest;
 import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.dto.response.FileResponse;
 import com.oreo.backend.file.repository.FileRepository;
+import com.oreo.backend.record.document.Record;
+import com.oreo.backend.record.repository.RecordRepository;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,9 +39,12 @@ public class FileIntegrationTest extends IntegrationTest {
     @Autowired
     FileRepository fileRepository;
 
+    @Autowired
+    RecordRepository recordRepository;
 
     @AfterEach
     void tearDown() {
+        recordRepository.deleteAll();
         fileRepository.deleteAll();
     }
 
@@ -137,6 +145,59 @@ public class FileIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.totalElements").value(4))
                 .andExpect(jsonPath("$.content", equalTo(asParsedJson(expected))))
                 .andDo(print());
+        }
+    }
+
+    @Nested
+    @DisplayName("DELETE /api/files/{id}")
+    class DeleteFile {
+
+        List<File> savedFiles;
+        List<Record> savedRecords;
+
+        String getUri(String id) {
+            return "/api/files/" + id;
+        }
+
+        @BeforeEach
+        void setUp() {
+            List<File> files = List.of(new File("a.com", "t1"), new File("b.com", "t2"));
+            savedFiles = fileRepository.saveAll(files);
+            List<Record> records = List.of(
+                Record.builder()
+                    .text("text1").file(savedFiles.get(0))
+                    .build(),
+                Record.builder()
+                    .text("text2").file(savedFiles.get(1))
+                    .build());
+            savedRecords = recordRepository.saveAll(records);
+        }
+
+        @Test
+        @DisplayName("File과 record를 삭제한다.")
+        void deleteFileAndRecord() throws Exception {
+            //given
+            String id = savedFiles.get(0).getId();
+            String uri = getUri(id);
+            given(objectStorage.deleteObject(any(DeleteObjectRequest.class))).willReturn(
+                mock(DeleteObjectResponse.class));
+
+            //when
+            ResultActions actions = mockMvc.perform(
+                delete(uri).contentType(MediaType.APPLICATION_JSON));
+
+            //then
+            actions.andExpect(status().isNoContent())
+                .andDo(print());
+
+            List<Record> records = recordRepository.findAll();
+            assertThat(records).hasSize(1);
+            assertThat(records.get(0)).usingRecursiveComparison().
+                ignoringFields("file").isEqualTo(savedRecords.get(1));
+
+            List<File> files = fileRepository.findAll();
+            assertThat(files).hasSize(1);
+            assertThat(files.get(0)).usingRecursiveComparison().isEqualTo(savedFiles.get(1));
         }
     }
 }
