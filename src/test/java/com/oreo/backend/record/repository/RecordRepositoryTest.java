@@ -6,7 +6,6 @@ import com.oreo.backend.common.config.MongoConfig;
 import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.record.document.Record;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,10 +29,9 @@ public class RecordRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        File file = new File("aa.com", "title");
+        File file = new File("aa.mp3", "title1");
         savedFile = fileRepository.save(file);
         Record record = Record.builder()
-            .text(List.of("hello"))
             .file(savedFile).build();
         savedRecord = recordRepository.save(record);
     }
