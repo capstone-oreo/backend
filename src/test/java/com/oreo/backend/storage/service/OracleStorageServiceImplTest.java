@@ -13,7 +13,6 @@ import com.oracle.bmc.objectstorage.responses.DeleteObjectResponse;
 import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.storage.exception.InvalidFileExtensionException;
-import com.oreo.backend.storage.service.OracleStorageServiceImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.DisplayName;
@@ -82,7 +81,8 @@ class OracleStorageServiceImplTest {
 
             //when
             //then
-            assertThrows(InvalidFileExtensionException.class, () -> storageService.uploadVoice(mockFile));
+            assertThrows(InvalidFileExtensionException.class,
+                () -> storageService.uploadVoice(mockFile));
         }
 
         @Test
@@ -94,7 +94,8 @@ class OracleStorageServiceImplTest {
 
             //when
             //then
-            assertThrows(InvalidFileExtensionException.class, () -> storageService.uploadVoice(mockFile));
+            assertThrows(InvalidFileExtensionException.class,
+                () -> storageService.uploadVoice(mockFile));
         }
 
         @Test
@@ -124,6 +125,18 @@ class OracleStorageServiceImplTest {
 
             //when
             storageService.deleteVoice(filename);
+        }
+
+        @Test
+        @DisplayName("파일 삭제에 오류가 발생한다.")
+        void deleteFileException() {
+            //given
+            String filename = "voice%2Faaaabbb.m4a";
+            given(objectStorage.deleteObject(any(DeleteObjectRequest.class))).willThrow(
+                RuntimeException.class);
+
+            //when
+            assertThrows(InvalidFileException.class, () -> storageService.deleteVoice(filename));
         }
     }
 }
