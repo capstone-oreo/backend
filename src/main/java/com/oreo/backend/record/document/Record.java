@@ -1,12 +1,10 @@
 package com.oreo.backend.record.document;
 
 import com.oreo.backend.file.document.File;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -20,20 +18,15 @@ public class Record {
     @Id
     private String id;
 
-    @NotEmpty
-    private String text;
+    private List<String> text;
 
-    @Default
-    private List<Integer> speed = new ArrayList<>();
+    private List<Integer> speed;
 
-    @Default
-    private List<Integer> volume = new ArrayList<>();
+    private List<Integer> volume;
 
-    @Default
-    private List<String> keyword = new ArrayList<>();
+    private List<String> keyword;
 
-    @Default
-    private List<String> habitualWorld = new ArrayList<>();
+    private List<String> habitualWorld;
 
     @DBRef(lazy = true)
     @NotNull
@@ -43,13 +36,13 @@ public class Record {
     private String createdAt;
 
     @Builder
-    public Record(String text, List<Integer> speed, List<Integer> volume, List<String> keyword,
-        List<String> habitualWorld, File file) {
-        this.text = text;
-        this.speed = speed;
-        this.volume = volume;
-        this.keyword = keyword;
-        this.habitualWorld = habitualWorld;
+    public Record(List<String> text, List<Integer> speed, List<Integer> volume,
+        List<String> keyword, List<String> habitualWorld, File file) {
+        this.text = text != null ? text : new ArrayList<>();
+        this.speed = speed != null ? speed : new ArrayList<>();
+        this.volume = volume != null ? volume : new ArrayList<>();
+        this.keyword = keyword != null ? keyword : new ArrayList<>();
+        this.habitualWorld = habitualWorld != null ? habitualWorld : new ArrayList<>();
         this.file = file;
     }
 }

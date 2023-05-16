@@ -81,7 +81,8 @@ public class FileIntegrationTest extends IntegrationTest {
                 assertThat(file.getTitle()).isEqualTo(title);
 
                 Record record = recordRepository.findByFile_Id(id).orElseThrow();
-                assertThat(record.getText()).isEqualTo("hello");
+                assertThat(record.getText()).isEqualTo(List.of("hello"));
+                System.out.println(record.getVolume());
             })
             .andDo(print());
     }
@@ -168,10 +169,10 @@ public class FileIntegrationTest extends IntegrationTest {
             savedFiles = fileRepository.saveAll(files);
             List<Record> records = List.of(
                 Record.builder()
-                    .text("text1").file(savedFiles.get(0))
+                    .text(List.of("text1")).file(savedFiles.get(0))
                     .build(),
                 Record.builder()
-                    .text("text2").file(savedFiles.get(1))
+                    .text(List.of("text2")).file(savedFiles.get(1))
                     .build());
             savedRecords = recordRepository.saveAll(records);
         }

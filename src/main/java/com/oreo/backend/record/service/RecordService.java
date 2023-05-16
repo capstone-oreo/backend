@@ -7,6 +7,7 @@ import com.oreo.backend.record.document.Record;
 import com.oreo.backend.record.dto.response.RecordResponse;
 import com.oreo.backend.record.exception.RecordNotFoundException;
 import com.oreo.backend.record.repository.RecordRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,8 @@ public class RecordService {
     public String saveRecord(String fileId) {
         File file = fileRepository.findById(fileId)
             .orElseThrow(() -> new FileNotFoundException("파일을 찾을 수 없습니다."));
-        Record record = recordRepository.save(Record.builder().text("hello").file(file).build());
+        Record record = recordRepository.save(
+            Record.builder().text(List.of("hello")).file(file).build());
         return record.getId();
     }
 

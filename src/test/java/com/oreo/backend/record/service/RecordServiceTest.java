@@ -14,6 +14,7 @@ import com.oreo.backend.record.document.Record;
 import com.oreo.backend.record.dto.response.RecordResponse;
 import com.oreo.backend.record.exception.RecordNotFoundException;
 import com.oreo.backend.record.repository.RecordRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +44,7 @@ class RecordServiceTest {
         void deleteRecord() {
             //given
             String fileId = "12345";
-            Record record = new Record("text", null, null, null, null, mock(File.class));
+            Record record = new Record(List.of("text"), null, null, null, null, mock(File.class));
             given(recordRepository.findByFile_Id(fileId)).willReturn(Optional.of(record));
             willDoNothing().given(recordRepository).delete(record);
 

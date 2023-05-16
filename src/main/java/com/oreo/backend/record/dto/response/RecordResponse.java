@@ -8,7 +8,7 @@ import lombok.Getter;
 public class RecordResponse {
 
     private final String id;
-    private final String text;
+    private final List<String> text;
     private final List<Integer> speed;
     private final List<Integer> volume;
     private final List<String> keyword;
