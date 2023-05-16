@@ -10,7 +10,9 @@ public enum ErrorCode {
     TYPE_MISMATCH("1003"),
     STT_REQUEST("1004"),
     INVALID_FILE("1005"),
-    INVALID_FILE_EXTENSION("1006");
+    INVALID_FILE_EXTENSION("1006"),
+    FILE_NOT_FOUND("1007"),
+    RECORD_NOT_FOUND("1008");
 
     private final String errorCode;
 

@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OracleStorageServiceImpl implements StorageService {
@@ -44,6 +46,7 @@ public class OracleStorageServiceImpl implements StorageService {
                 .build();
             objectStorage.putObject(request);
         } catch (IOException e) {
+            log.error(e.getClass().getSimpleName(), e);
             throw new InvalidFileException("유효하지 않은 파일입니다.");
         }
 
@@ -51,13 +54,17 @@ public class OracleStorageServiceImpl implements StorageService {
     }
 
     public void deleteVoice(String filename) {
-        String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
-        DeleteObjectRequest request = DeleteObjectRequest.builder()
-            .bucketName(BUCKET)
-            .namespaceName(NAMESPACE)
-            .objectName(decodedFilename)
-            .build();
-        objectStorage.deleteObject(request);
+        try {
+            DeleteObjectRequest request = DeleteObjectRequest.builder()
+                .bucketName(BUCKET)
+                .namespaceName(NAMESPACE)
+                .objectName(URLDecoder.decode(filename, StandardCharsets.UTF_8))
+                .build();
+            objectStorage.deleteObject(request);
+        } catch (Exception e) {
+            log.error(e.getClass().getSimpleName(), e);
+            throw new InvalidFileException("오류가 발생했습니니다.");
+        }
     }
 
 //    public File download() throws IOException {

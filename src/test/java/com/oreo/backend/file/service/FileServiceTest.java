@@ -6,16 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.oreo.backend.file.document.File;
 import com.oreo.backend.file.dto.response.FileResponse;
+import com.oreo.backend.file.exception.FileNotFoundException;
 import com.oreo.backend.file.exception.InvalidFileException;
 import com.oreo.backend.file.exception.SttRequestException;
 import com.oreo.backend.file.repository.FileRepository;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -57,7 +60,7 @@ class FileServiceTest {
         @DisplayName("uri와 제목을 저장한다.")
         void saveFile() {
             //given
-            String uri = "aabb.com";
+            String filename = "aabb.mp3";
             String title = "file title";
             String id = "13981a980s1";
             File mockFile = mock(File.class);
@@ -66,18 +69,18 @@ class FileServiceTest {
             given(mockFile.getId()).willReturn(id);
 
             //when
-            String savedId = fileService.saveFile(uri, title);
+            String savedId = fileService.saveFile(filename, title);
 
             //then
             assertThat(savedId).isEqualTo(id);
-            verifyFile(uri, title);
+            verifyFile(filename, title);
         }
 
-        private void verifyFile(String uri, String title) {
+        private void verifyFile(String filename, String title) {
             ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
             verify(fileRepository).save(fileCaptor.capture());
             File file = fileCaptor.getValue();
-            assertThat(file.getUri()).isEqualTo(uri);
+            assertThat(file.getFilename()).isEqualTo(filename);
             assertThat(file.getTitle()).isEqualTo(title);
         }
     }
@@ -106,7 +109,7 @@ class FileServiceTest {
         }
 
         @Test
-        @DisplayName("유효하지 않은 파일은 예외가 발생한다.")
+        @DisplayName("유효하지 않은 file은 예외가 발생한다.")
         void invalidFile() throws IOException {
             // given
             MultipartFile mockFile = mock(MultipartFile.class);
@@ -120,7 +123,6 @@ class FileServiceTest {
         @DisplayName("API 요청에 실패하면 예외가 발생한다.")
         void failApiRequest() {
             //given
-            List<String> texts = List.of("hello", "world");
             MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
                 "test data".getBytes());
             ResponseEntity<Object> response = ResponseEntity.internalServerError().build();
@@ -156,6 +158,38 @@ class FileServiceTest {
             assertThat(result.getTotalElements()).isEqualTo(total);
             assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(
                 files.stream().map(FileResponse::new).toList());
+        }
+    }
+
+    @Nested
+    class DeleteFile {
+
+        @Test
+        @DisplayName("File을 삭제한다.")
+        void deleteFile() {
+            //given
+            String fileId = "12345";
+            File file = new File("aa.com", "title");
+            given(fileRepository.findById(fileId)).willReturn(Optional.of(file));
+            willDoNothing().given(fileRepository).delete(file);
+
+            //when
+            FileResponse result = fileService.deleteFile(fileId);
+
+            //then
+            assertThat(result).usingRecursiveComparison().isEqualTo(new FileResponse(file));
+        }
+
+        @Test
+        @DisplayName("File를 찾을 수 없으면 예외가 발생한다.")
+        void cannotFindFileById() {
+            //given
+            String fileId = "12345";
+            given(fileRepository.findById(fileId)).willReturn(Optional.empty());
+
+            //when
+            //then
+            assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(fileId));
         }
     }
 }

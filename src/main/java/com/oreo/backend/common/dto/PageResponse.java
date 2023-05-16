@@ -7,12 +7,12 @@ import org.springframework.data.domain.Page;
 @Getter
 public class PageResponse<T> {
 
-    boolean first;
-    boolean last;
-    private List<T> content;
-    private int currentSize; // 현재 content 개수
-    private int totalPages; // 총 page 개수
-    private long totalElements; // 전체 content 개수
+    private final boolean first;
+    private final boolean last;
+    private final List<T> content;
+    private final int currentSize; // 현재 content 개수
+    private final int totalPages; // 총 page 개수
+    private final long totalElements; // 전체 content 개수
 
     public PageResponse(Page<T> page) {
         first = page.isFirst();

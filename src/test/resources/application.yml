@@ -12,3 +12,11 @@ oracle:
   cloud:
     bucket: test
     namespace: test
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG
