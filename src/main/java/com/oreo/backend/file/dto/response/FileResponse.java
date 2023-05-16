@@ -8,16 +8,18 @@ import lombok.Getter;
 public class FileResponse {
 
     private final String id;
+    private final String uri;
     private final String title;
-    private final String filename;
+    private final String createdAt;
 
     public FileResponse(File file) {
         this.id = file.getId();
-        this.filename = file.getFilename();
+        this.uri = FileService.PRE_URI + file.getFilename();
         this.title = file.getTitle();
+        this.createdAt = file.getCreatedAt();
     }
 
-    public String getUri() {
-        return FileService.PRE_URI + this.filename;
+    public String getFilename() {
+        return uri.substring(FileService.PRE_URI.length());
     }
 }
