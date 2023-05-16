@@ -79,6 +79,9 @@ public class FileIntegrationTest extends IntegrationTest {
                 String id = result.getResponse().getContentAsString();
                 File file = fileRepository.findById(id).orElseThrow();
                 assertThat(file.getTitle()).isEqualTo(title);
+
+                Record record = recordRepository.findByFile_Id(id).orElseThrow();
+                assertThat(record.getText()).isEqualTo("hello");
             })
             .andDo(print());
     }
