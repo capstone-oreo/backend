@@ -39,8 +39,8 @@ public class FileController {
     public ResponseEntity<String> saveFile(@RequestPart(name = "file") MultipartFile file,
         @RequestParam(name = "title") String title) {
 
-        String uri = storageService.uploadVoice(file);
-        String id = fileService.saveFile(uri, title);
+        String filename = storageService.uploadVoice(file);
+        String id = fileService.saveFile(filename, title);
 
         return ResponseEntity.ok(id);
     }
@@ -63,7 +63,7 @@ public class FileController {
     public ResponseEntity<?> deleteFile(@PathVariable String id) {
         recordService.deleteRecord(id);
         FileResponse fileResponse = fileService.deleteFile(id);
-        storageService.deleteVoice(fileResponse.getUri());
+        storageService.deleteVoice(fileResponse.getFilename());
         return ResponseEntity.noContent().build();
     }
 

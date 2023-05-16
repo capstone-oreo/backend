@@ -60,7 +60,7 @@ class FileServiceTest {
         @DisplayName("uri와 제목을 저장한다.")
         void saveFile() {
             //given
-            String uri = "aabb.com";
+            String filename = "aabb.mp3";
             String title = "file title";
             String id = "13981a980s1";
             File mockFile = mock(File.class);
@@ -69,18 +69,18 @@ class FileServiceTest {
             given(mockFile.getId()).willReturn(id);
 
             //when
-            String savedId = fileService.saveFile(uri, title);
+            String savedId = fileService.saveFile(filename, title);
 
             //then
             assertThat(savedId).isEqualTo(id);
-            verifyFile(uri, title);
+            verifyFile(filename, title);
         }
 
-        private void verifyFile(String uri, String title) {
+        private void verifyFile(String filename, String title) {
             ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
             verify(fileRepository).save(fileCaptor.capture());
             File file = fileCaptor.getValue();
-            assertThat(file.getUri()).isEqualTo(uri);
+            assertThat(file.getFilename()).isEqualTo(filename);
             assertThat(file.getTitle()).isEqualTo(title);
         }
     }

@@ -33,8 +33,8 @@ public class FileService {
     private final FileRepository fileRepository;
     private final RestTemplateBuilder restTemplateBuilder;
 
-    public String saveFile(String postUri, String filename) {
-        File savedFile = fileRepository.save(new File(postUri, filename));
+    public String saveFile(String filename, String title) {
+        File savedFile = fileRepository.save(new File(filename, title));
         return savedFile.getId();
     }
 

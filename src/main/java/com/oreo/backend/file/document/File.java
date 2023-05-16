@@ -15,17 +15,17 @@ public class File {
     private String id;
 
     @NotEmpty
-    private String uri;
+    private String title;
 
     @NotEmpty
-    private String title;
+    private String filename;
 
     @CreatedDate
     private String createdAt;
 
     @Builder
-    public File(String uri, String title) {
-        this.uri = uri;
+    public File(String filename, String title) {
         this.title = title;
+        this.filename = filename;
     }
 }
