@@ -2,11 +2,14 @@ package com.oreo.backend.record.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 
 import com.oreo.backend.file.document.File;
+import com.oreo.backend.file.exception.FileNotFoundException;
+import com.oreo.backend.file.repository.FileRepository;
 import com.oreo.backend.record.document.Record;
 import com.oreo.backend.record.dto.response.RecordResponse;
 import com.oreo.backend.record.exception.RecordNotFoundException;
@@ -25,6 +28,9 @@ class RecordServiceTest {
 
     @InjectMocks
     RecordService recordService;
+
+    @Mock
+    FileRepository fileRepository;
 
     @Mock
     RecordRepository recordRepository;
@@ -58,6 +64,41 @@ class RecordServiceTest {
             //when
             //then
             assertThrows(RecordNotFoundException.class, () -> recordService.deleteRecord(fileId));
+        }
+    }
+
+    @Nested
+    class SaveRecord {
+
+        @Test
+        @DisplayName("Record를 저장한다.")
+        void saveRecord() {
+            //given
+            String fileId = "12345a";
+            String recordId = "aaaa";
+            File mockFile = mock(File.class);
+            Record mockRecord = mock(Record.class);
+            given(fileRepository.findById(fileId)).willReturn(Optional.of(mockFile));
+            given(recordRepository.save(any(Record.class))).willReturn(mockRecord);
+            given(mockRecord.getId()).willReturn(recordId);
+
+            //when
+            String result = recordService.saveRecord(fileId);
+
+            //then
+            assertThat(result).isEqualTo(recordId);
+        }
+
+        @Test
+        @DisplayName("File id로 file을 찾을 수 없으면 예외가 발생한다.")
+        void fileNotFoundException() {
+            //given
+            String fileId = "12345a";
+            given(fileRepository.findById(fileId)).willReturn(Optional.empty());
+
+            //when
+            //then
+            assertThrows(FileNotFoundException.class, () -> recordService.saveRecord(fileId));
         }
     }
 }
