@@ -2,9 +2,13 @@ package com.oreo.backend.record.dto.response;
 
 import com.oreo.backend.record.document.Record;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class RecordResponse {
 
     private final String id;
