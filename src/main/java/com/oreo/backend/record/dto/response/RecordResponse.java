@@ -22,6 +22,6 @@ public class RecordResponse {
         this.volume = record.getVolume();
         this.keyword = record.getKeyword();
         this.habitualWorld = record.getHabitualWorld();
-        this.createdAt = getCreatedAt();
+        this.createdAt = record.getCreatedAt();
     }
 }
