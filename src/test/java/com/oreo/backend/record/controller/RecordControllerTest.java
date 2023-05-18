@@ -36,7 +36,7 @@ class RecordControllerTest extends IntegrationTest {
     }
 
     @Nested
-    @DisplayName("GET /api/records?fileId={fildId}")
+    @DisplayName("GET /api/records?fileId={fileId}")
     class FindRecord {
 
         String getUri(String fileId) {
