@@ -32,4 +32,10 @@ public class RecordService {
         recordRepository.delete(record);
         return new RecordResponse(record);
     }
+
+    public RecordResponse findRecord(String fileId) {
+        Record record = recordRepository.findByFile_Id(fileId)
+            .orElseThrow(() -> new RecordNotFoundException("분석 내용을 찾을 수 없습니다."));
+        return new RecordResponse(record);
+    }
 }

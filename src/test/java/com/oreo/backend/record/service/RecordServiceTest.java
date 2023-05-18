@@ -102,4 +102,44 @@ class RecordServiceTest {
             assertThrows(FileNotFoundException.class, () -> recordService.saveRecord(fileId));
         }
     }
+
+    @Nested
+    class FindRecord {
+
+        @Test
+        @DisplayName("FileId로 record를 조회한다.")
+        void findRecord() {
+            //given
+            File mockFile = mock(File.class);
+            Record record = Record.builder()
+                .text(List.of("a", "b"))
+                .speed(List.of(1, 2, 3))
+                .volume(List.of(3, 3, 3))
+                .habitualWorld(List.of("hello"))
+                .file(mockFile).build();
+            String fileId = "abcde123";
+
+            given(recordRepository.findByFile_Id(fileId)).willReturn(Optional.of(record));
+
+            //when
+            RecordResponse result = recordService.findRecord(fileId);
+
+            //then
+            assertThat(result).usingRecursiveComparison().isEqualTo(new RecordResponse(record));
+        }
+
+        @Test
+        @DisplayName("fileId로 record를 찾을 수 없으면 예외가 발생한다.")
+        void recordNotFoundByFileId() {
+            //given
+            String fileId = "abcde123";
+
+            given(recordRepository.findByFile_Id(fileId)).willReturn(Optional.empty());
+
+            //when
+            //then
+            assertThrows(RecordNotFoundException.class, () -> recordService.findRecord(fileId));
+
+        }
+    }
 }
