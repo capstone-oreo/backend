@@ -13,6 +13,7 @@ public class RecordResponse {
     private final List<Integer> volume;
     private final List<String> keyword;
     private final List<String> habitualWorld;
+    private final String createdAt;
 
     public RecordResponse(Record record) {
         this.id = record.getId();
@@ -21,5 +22,6 @@ public class RecordResponse {
         this.volume = record.getVolume();
         this.keyword = record.getKeyword();
         this.habitualWorld = record.getHabitualWorld();
+        this.createdAt = getCreatedAt();
     }
 }
