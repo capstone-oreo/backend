@@ -84,7 +84,7 @@ class RecordServiceTest {
             given(mockRecord.getId()).willReturn(recordId);
 
             //when
-            String result = recordService.saveRecord(fileId);
+            String result = recordService.saveRecord(fileId, List.of("hello"));
 
             //then
             assertThat(result).isEqualTo(recordId);
@@ -99,7 +99,7 @@ class RecordServiceTest {
 
             //when
             //then
-            assertThrows(FileNotFoundException.class, () -> recordService.saveRecord(fileId));
+            assertThrows(FileNotFoundException.class, () -> recordService.saveRecord(fileId, List.of()));
         }
     }
 
