@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +41,8 @@ public class FileController {
         @RequestParam(name = "title") String title) {
         String filename = storageService.uploadVoice(file);
         String id = fileService.saveFile(filename, title);
-        recordService.saveRecord(id);
+        List<String> stt = fileService.analyzeVoiceFile(file);
+        recordService.saveRecord(id, stt);
         return ResponseEntity.ok(id);
     }
 

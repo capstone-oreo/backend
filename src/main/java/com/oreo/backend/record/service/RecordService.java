@@ -18,11 +18,11 @@ public class RecordService {
     private final FileRepository fileRepository;
     private final RecordRepository recordRepository;
 
-    public String saveRecord(String fileId) {
+    public String saveRecord(String fileId, List<String> stt) {
         File file = fileRepository.findById(fileId)
             .orElseThrow(() -> new FileNotFoundException("파일을 찾을 수 없습니다."));
         Record record = recordRepository.save(
-            Record.builder().text(List.of("hello")).file(file).build());
+            Record.builder().text(stt).file(file).build());
         return record.getId();
     }
 
