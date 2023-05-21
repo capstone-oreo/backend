@@ -4,6 +4,7 @@ package com.oreo.backend.file.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -30,9 +31,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.client.RestTemplate;
 
 public class FileIntegrationTest extends IntegrationTest {
 
@@ -54,20 +59,20 @@ public class FileIntegrationTest extends IntegrationTest {
         //given
         String uri = "/api/files";
         String title = "file title";
-//        List<String> texts = List.of("hello", "world");
+        List<String> texts = List.of("hello", "world");
 
         MockMultipartFile mockFile = new MockMultipartFile("file", "test.wav", "audio/wav",
             "test data".getBytes());
 
         given(objectStorage.putObject(any(PutObjectRequest.class))).willReturn(
             mock(PutObjectResponse.class));
-//        RestTemplate restTemplate = mock(RestTemplate.class);
-//        given(restTemplateBuilder.build()).willReturn(restTemplate);
-//
-//        ResponseEntity<List<String>> response = ResponseEntity.ok(texts);
-//        given(
-//            restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
-//                any(ParameterizedTypeReference.class))).willReturn(response);
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        given(restTemplateBuilder.build()).willReturn(restTemplate);
+
+        ResponseEntity<List<String>> response = ResponseEntity.ok(texts);
+        given(
+            restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
+                any(ParameterizedTypeReference.class))).willReturn(response);
 
         //when
         ResultActions actions = mockMvc.perform(
@@ -81,7 +86,7 @@ public class FileIntegrationTest extends IntegrationTest {
                 assertThat(file.getTitle()).isEqualTo(title);
 
                 Record record = recordRepository.findByFile_Id(id).orElseThrow();
-                assertThat(record.getText()).isEqualTo(List.of("hello"));
+                assertThat(record.getText()).isEqualTo(List.of("hello", "world"));
                 System.out.println(record.getVolume());
             })
             .andDo(print());
