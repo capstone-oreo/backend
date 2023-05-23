@@ -6,7 +6,7 @@ on:
       - 'main'
 
 env:
-  REPOSITORY: backend
+  REPOSITORY: speech-maru-backend
   ORGANIZATION: capstone-oreo
   DOCKER_COMPOSE_FILE: docker-compose.prod.yml
 
