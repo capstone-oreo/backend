@@ -48,6 +48,7 @@ services:
     volumes:
       - ~/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ~/nginx/conf.d/application.conf:/etc/nginx/conf.d/application.conf
+      - ~/build:/build
     environment:
       - TZ=Asia/Seoul
     networks:
