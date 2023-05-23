@@ -25,3 +25,10 @@ spring:
   config:
     activate:
       on-profile: "local"
+  origin: "http://localhost:3000"
+---
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+  origin: "http://132.145.87.252"
