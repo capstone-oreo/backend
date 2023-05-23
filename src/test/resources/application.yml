@@ -3,6 +3,7 @@ spring:
     mongodb:
       database: test
       port: 0
+  origin: "http://localhost:8080"
 de:
   flapdoodle:
     mongodb:
