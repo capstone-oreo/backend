@@ -39,9 +39,10 @@ public class FileController {
     @PostMapping(value = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> saveFile(@RequestPart(name = "file") MultipartFile file,
         @RequestParam(name = "title") String title) {
+        storageService.getValidExtension(file.getOriginalFilename());
+        List<String> stt = fileService.analyzeVoiceFile(file);
         String filename = storageService.uploadVoice(file);
         String id = fileService.saveFile(filename, title);
-        List<String> stt = fileService.analyzeVoiceFile(file);
         recordService.saveRecord(id, stt);
         return ResponseEntity.ok(id);
     }

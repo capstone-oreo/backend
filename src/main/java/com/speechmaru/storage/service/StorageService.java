@@ -7,4 +7,6 @@ public interface StorageService {
     String uploadVoice(MultipartFile file);
 
     void deleteVoice(String uri);
+
+    String getValidExtension(String fileName);
 }
