@@ -37,24 +37,6 @@ class OracleStorageServiceImplTest {
     class UploadVoice {
 
         @Test
-        @DisplayName("m4a 음성 파일을 storage에 uuid로 저장한다.")
-        void uploadVoiceM4aInStorage() throws IOException {
-            //given
-            MultipartFile mockFile = mock(MultipartFile.class);
-            given(mockFile.getOriginalFilename()).willReturn("test.m4a");
-            given(mockFile.getInputStream()).willReturn(mock(InputStream.class));
-            given(objectStorage.putObject(any(PutObjectRequest.class))).willReturn(
-                mock(PutObjectResponse.class));
-
-            //when
-            String uri = storageService.uploadVoice(mockFile);
-
-            //then
-            assertThat(uri).containsPattern(
-                "^voice%2F[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.m4a$");
-        }
-
-        @Test
         @DisplayName("mp3 음성 파일을 storage에 uuid로 저장한다.")
         void uploadVoiceMp3InStorage() throws IOException {
             //given
@@ -74,7 +56,7 @@ class OracleStorageServiceImplTest {
 
         @Test
         @DisplayName("음성 파일 확장자가 아닌 파일은 예외가 발생한다.")
-        void NotM4aExtension() {
+        void NotVoiceFileExtension() {
             //given
             MultipartFile mockFile = mock(MultipartFile.class);
             given(mockFile.getOriginalFilename()).willReturn("test.mp4");
@@ -119,7 +101,7 @@ class OracleStorageServiceImplTest {
         @DisplayName("파일 이름으로 storage의 파일을 삭제한다.")
         void deleteFile() {
             //given
-            String filename = "voice%2Faaaabbb.m4a";
+            String filename = "voice%2Faaaabbb.flac";
             given(objectStorage.deleteObject(any(DeleteObjectRequest.class))).willReturn(
                 mock(DeleteObjectResponse.class));
 
@@ -131,7 +113,7 @@ class OracleStorageServiceImplTest {
         @DisplayName("파일 삭제에 오류가 발생한다.")
         void deleteFileException() {
             //given
-            String filename = "voice%2Faaaabbb.m4a";
+            String filename = "voice%2Faaaabbb.flac";
             given(objectStorage.deleteObject(any(DeleteObjectRequest.class))).willThrow(
                 RuntimeException.class);
 

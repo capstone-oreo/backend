@@ -31,7 +31,7 @@ public class OracleStorageServiceImpl implements StorageService {
 
     private final ObjectStorage objectStorage;
 
-    private final List<String> FILE_EXTENSIONS = List.of("wav", "ogg", "mp3", "m4a", "flac");
+    private final List<String> FILE_EXTENSIONS = List.of("wav", "ogg", "mp3", "flac");
 
     public String uploadVoice(MultipartFile file) {
         String extension = getValidExtension(file.getOriginalFilename());
@@ -42,7 +42,7 @@ public class OracleStorageServiceImpl implements StorageService {
                 .namespaceName(NAMESPACE)
                 .objectName(filename)
                 .putObjectBody(file.getInputStream())
-                .contentType("audio/" + (extension.equals("m4a") ? "x-m4a" : extension))
+                .contentType("audio/" + extension)
                 .build();
             objectStorage.putObject(request);
         } catch (IOException e) {
@@ -85,7 +85,7 @@ public class OracleStorageServiceImpl implements StorageService {
 
         if (extension.isEmpty() || !FILE_EXTENSIONS.contains(extension.get())) {
             throw new InvalidFileExtensionException(
-                "음성파일은 'wav', 'ogg', 'mp3', 'm4a', 'flac' 확장자만 가능합니다.");
+                "음성파일은 'wav', 'ogg', 'mp3', 'flac' 확장자만 가능합니다.");
         }
         return extension.get();
     }
