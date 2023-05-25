@@ -79,7 +79,7 @@ public class OracleStorageServiceImpl implements StorageService {
 //        GetObjectResponse getObjectResponse = objectStorage.getObject(getObjectRequest);
 //    }
 
-    private String getValidExtension(String fileName) {
+    public String getValidExtension(String fileName) {
         Optional<String> extension = Optional.ofNullable(fileName).filter(f -> f.contains("."))
             .map(f -> f.substring(fileName.lastIndexOf(".") + 1));
 
