@@ -23,8 +23,8 @@ services:
       - oreo
 
   mongo:
-    image: "mongo:6.0"
     container_name: mongo
+    image: mongo:6.0
     environment:
       - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
       - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
@@ -40,7 +40,7 @@ services:
 
   nginx:
     container_name: nginx
-    image: "nginx:latest"
+    image: nginx:1.25.0-alpine
     restart: always
     ports:
       - "80:80/tcp"
@@ -49,6 +49,8 @@ services:
       - ~/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ~/nginx/conf.d/application.conf:/etc/nginx/conf.d/application.conf
       - ~/build:/build
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/letsencrypt
     environment:
       - TZ=Asia/Seoul
     networks:
