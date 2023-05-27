@@ -31,4 +31,4 @@ spring:
   config:
     activate:
       on-profile: "prod"
-  origin: http://132.145.87.252
+  origin: https://speechmaru.kro.kr
