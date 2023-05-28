@@ -44,7 +44,8 @@ class RecordServiceTest {
         void deleteRecord() {
             //given
             String fileId = "12345";
-            Record record = new Record(List.of("text"), null, null, null, null, mock(File.class));
+            Record record = new Record(List.of("text"), null, null, null, null, null,
+                mock(File.class));
             given(recordRepository.findByFile_Id(fileId)).willReturn(Optional.of(record));
             willDoNothing().given(recordRepository).delete(record);
 
@@ -99,7 +100,8 @@ class RecordServiceTest {
 
             //when
             //then
-            assertThrows(FileNotFoundException.class, () -> recordService.saveRecord(fileId, List.of()));
+            assertThrows(FileNotFoundException.class,
+                () -> recordService.saveRecord(fileId, List.of()));
         }
     }
 
