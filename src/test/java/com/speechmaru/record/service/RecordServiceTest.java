@@ -115,7 +115,7 @@ class RecordServiceTest {
                 .text(List.of("a", "b"))
                 .speed(List.of(1, 2, 3))
                 .volume(List.of(3, 3, 3))
-                .habitualWorld(List.of("hello"))
+                .habitualWord(List.of("hello"))
                 .file(mockFile).build();
             String fileId = "abcde123";
 
