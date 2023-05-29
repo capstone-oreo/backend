@@ -101,6 +101,7 @@ class FileServiceTest {
             given(
                 restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
                     any(ParameterizedTypeReference.class))).willReturn(response);
+            given(mockStt.getText()).willReturn(List.of("hello"));
 
             //when
             SttResponse result = fileService.analyzeVoiceFile(mockFile);
@@ -135,6 +136,26 @@ class FileServiceTest {
             //when
             assertThrows(SttRequestException.class, () -> fileService.analyzeVoiceFile(mockFile));
         }
+
+        @Test
+        @DisplayName("목소리가 없는 file은 예외가 발생한다.")
+        void notInclueVoice() {
+            //given
+            SttResponse mockStt = mock(SttResponse.class);
+            MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
+                "test data".getBytes());
+            ResponseEntity<SttResponse> response = ResponseEntity.ok(mockStt);
+            given(restTemplateBuilder.build()).willReturn(restTemplate);
+            given(
+                restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
+                    any(ParameterizedTypeReference.class))).willReturn(response);
+            given(mockStt.getText()).willReturn(List.of());
+
+            //when
+            //then
+            assertThrows(InvalidFileException.class, () -> fileService.analyzeVoiceFile(mockFile));
+        }
+
     }
 
     @Nested
