@@ -5,9 +5,9 @@ import com.speechmaru.file.exception.FileNotFoundException;
 import com.speechmaru.file.repository.FileRepository;
 import com.speechmaru.record.document.Record;
 import com.speechmaru.record.dto.response.RecordResponse;
+import com.speechmaru.record.dto.response.SttResponse;
 import com.speechmaru.record.exception.RecordNotFoundException;
 import com.speechmaru.record.repository.RecordRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +18,10 @@ public class RecordService {
     private final FileRepository fileRepository;
     private final RecordRepository recordRepository;
 
-    public String saveRecord(String fileId, List<String> stt) {
+    public String saveRecord(String fileId, SttResponse stt) {
         File file = fileRepository.findById(fileId)
             .orElseThrow(() -> new FileNotFoundException("파일을 찾을 수 없습니다."));
-        Record record = recordRepository.save(
-            Record.builder().text(stt).file(file).build());
+        Record record = recordRepository.save(stt.toRecord(file));
         return record.getId();
     }
 

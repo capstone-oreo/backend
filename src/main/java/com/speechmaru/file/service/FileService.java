@@ -6,8 +6,12 @@ import com.speechmaru.file.exception.FileNotFoundException;
 import com.speechmaru.file.exception.InvalidFileException;
 import com.speechmaru.file.exception.SttRequestException;
 import com.speechmaru.file.repository.FileRepository;
+import com.speechmaru.record.dto.response.SttResponse;
 import java.io.IOException;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -39,7 +43,7 @@ public class FileService {
     }
 
     // python으로 음성 파일을 전달하고 분석 결과를 얻는다.
-    public List<String> analyzeVoiceFile(MultipartFile file) {
+    public SttResponse analyzeVoiceFile(MultipartFile file) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         try {
             ByteArrayResource contentsAsResource = new ByteArrayResource(file.getBytes()) {
@@ -56,7 +60,7 @@ public class FileService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<List<String>> response = restTemplateBuilder.build()
+        ResponseEntity<SttResponse> response = restTemplateBuilder.build()
             .exchange("http://flask:8000/stt", HttpMethod.POST, requestEntity,
                 new ParameterizedTypeReference<>() {
                 });
