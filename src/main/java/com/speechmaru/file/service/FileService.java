@@ -8,10 +8,6 @@ import com.speechmaru.file.exception.SttRequestException;
 import com.speechmaru.file.repository.FileRepository;
 import com.speechmaru.record.dto.response.SttResponse;
 import java.io.IOException;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -64,8 +60,12 @@ public class FileService {
             .exchange("http://flask:8000/stt", HttpMethod.POST, requestEntity,
                 new ParameterizedTypeReference<>() {
                 });
-        if (!response.getStatusCode().is2xxSuccessful()) {
+        SttResponse sttResponse = response.getBody();
+        if (!response.getStatusCode().is2xxSuccessful() || sttResponse == null) {
             throw new SttRequestException("STT 요청에 실패했습니다.");
+        }
+        if (sttResponse.getText() == null || sttResponse.getText().isEmpty()) {
+            throw new InvalidFileException("목소리가 없는 음성 파일입니다.");
         }
         return response.getBody();
     }
