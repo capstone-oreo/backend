@@ -12,6 +12,7 @@ import com.speechmaru.file.exception.FileNotFoundException;
 import com.speechmaru.file.repository.FileRepository;
 import com.speechmaru.record.document.Record;
 import com.speechmaru.record.dto.response.RecordResponse;
+import com.speechmaru.record.dto.response.SttResponse;
 import com.speechmaru.record.exception.RecordNotFoundException;
 import com.speechmaru.record.repository.RecordRepository;
 import java.util.List;
@@ -80,12 +81,14 @@ class RecordServiceTest {
             String recordId = "aaaa";
             File mockFile = mock(File.class);
             Record mockRecord = mock(Record.class);
+            SttResponse mockStt = mock(SttResponse.class);
             given(fileRepository.findById(fileId)).willReturn(Optional.of(mockFile));
             given(recordRepository.save(any(Record.class))).willReturn(mockRecord);
+            given(mockStt.toRecord(mockFile)).willReturn(mockRecord);
             given(mockRecord.getId()).willReturn(recordId);
 
             //when
-            String result = recordService.saveRecord(fileId, List.of("hello"));
+            String result = recordService.saveRecord(fileId, mockStt);
 
             //then
             assertThat(result).isEqualTo(recordId);
@@ -101,7 +104,7 @@ class RecordServiceTest {
             //when
             //then
             assertThrows(FileNotFoundException.class,
-                () -> recordService.saveRecord(fileId, List.of()));
+                () -> recordService.saveRecord(fileId, mock(SttResponse.class)));
         }
     }
 
