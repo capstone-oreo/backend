@@ -53,7 +53,7 @@ class RecordControllerTest extends IntegrationTest {
                 .speed(List.of(2, 2, 3))
                 .volume(List.of(4, 4, 4))
                 .keyword(List.of("hello"))
-                .habitualWorld(List.of("umm"))
+                .habitualWord(List.of("umm"))
                 .file(file)
                 .build());
             String uri = getUri(file.getId());

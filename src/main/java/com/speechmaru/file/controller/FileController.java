@@ -4,6 +4,7 @@ import com.speechmaru.common.dto.PageResponse;
 import com.speechmaru.file.dto.response.FileResponse;
 import com.speechmaru.file.exception.InvalidFileException;
 import com.speechmaru.file.service.FileService;
+import com.speechmaru.record.dto.response.SttResponse;
 import com.speechmaru.record.service.RecordService;
 import com.speechmaru.storage.service.StorageService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +41,7 @@ public class FileController {
     public ResponseEntity<String> saveFile(@RequestPart(name = "file") MultipartFile file,
         @RequestParam(name = "title") String title) {
         storageService.getValidExtension(file.getOriginalFilename());
-        List<String> stt = fileService.analyzeVoiceFile(file);
+        SttResponse stt = fileService.analyzeVoiceFile(file);
         String filename = storageService.uploadVoice(file);
         String id = fileService.saveFile(filename, title);
         recordService.saveRecord(id, stt);
@@ -69,8 +70,19 @@ public class FileController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/files-test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/files/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> saveFileTest(@RequestPart(name = "file") MultipartFile file) {
+        return test(file);
+    }
+
+    @PostMapping(value = "/files/test5sec", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> saveFileTest5sec(@RequestPart(name = "file") MultipartFile file)
+        throws InterruptedException {
+        Thread.sleep(5000);
+        return test(file);
+    }
+
+    private ResponseEntity<?> test(MultipartFile file) {
         try {
             if (file.getSize() <= 0) {
                 throw new IOException();

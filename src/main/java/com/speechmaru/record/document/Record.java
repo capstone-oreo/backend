@@ -26,7 +26,9 @@ public class Record {
 
     private List<String> keyword;
 
-    private List<String> habitualWorld;
+    private List<Integer> textInfo;
+
+    private List<String> habitualWord;
 
     @DBRef(lazy = true)
     @NotNull
@@ -37,12 +39,13 @@ public class Record {
 
     @Builder
     public Record(List<String> text, List<Integer> speed, List<Integer> volume,
-        List<String> keyword, List<String> habitualWorld, File file) {
+        List<String> keyword, List<Integer> textInfo, List<String> habitualWord, File file) {
         this.text = text != null ? text : new ArrayList<>();
         this.speed = speed != null ? speed : new ArrayList<>();
         this.volume = volume != null ? volume : new ArrayList<>();
         this.keyword = keyword != null ? keyword : new ArrayList<>();
-        this.habitualWorld = habitualWorld != null ? habitualWorld : new ArrayList<>();
+        this.textInfo = textInfo != null ? textInfo : new ArrayList<>();
+        this.habitualWord = habitualWord != null ? habitualWord : new ArrayList<>();
         this.file = file;
     }
 }

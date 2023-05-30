@@ -16,6 +16,7 @@ import com.speechmaru.file.exception.FileNotFoundException;
 import com.speechmaru.file.exception.InvalidFileException;
 import com.speechmaru.file.exception.SttRequestException;
 import com.speechmaru.file.repository.FileRepository;
+import com.speechmaru.record.dto.response.SttResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -89,23 +90,24 @@ class FileServiceTest {
     class AnalyzeVoiceFile {
 
         @Test
-        @DisplayName("multipart file을 받아 API 요청을 보내고 string 배열을 body로 받는다.")
+        @DisplayName("multipart file을 받아 API 요청을 보내고 분석 결과를 body로 받는다.")
         void analyzeVoiceFile() {
             //given
-            List<String> texts = List.of("hello", "world");
+            SttResponse mockStt = mock(SttResponse.class);
             MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
                 "test data".getBytes());
-            ResponseEntity<List<String>> response = ResponseEntity.ok(texts);
+            ResponseEntity<SttResponse> response = ResponseEntity.ok(mockStt);
             given(restTemplateBuilder.build()).willReturn(restTemplate);
             given(
                 restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
                     any(ParameterizedTypeReference.class))).willReturn(response);
+            given(mockStt.getText()).willReturn(List.of("hello"));
 
             //when
-            List<String> result = fileService.analyzeVoiceFile(mockFile);
+            SttResponse result = fileService.analyzeVoiceFile(mockFile);
 
             //then
-            assertThat(result).isEqualTo(texts);
+            assertThat(result).isEqualTo(mockStt);
         }
 
         @Test
@@ -134,6 +136,26 @@ class FileServiceTest {
             //when
             assertThrows(SttRequestException.class, () -> fileService.analyzeVoiceFile(mockFile));
         }
+
+        @Test
+        @DisplayName("목소리가 없는 file은 예외가 발생한다.")
+        void notInclueVoice() {
+            //given
+            SttResponse mockStt = mock(SttResponse.class);
+            MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
+                "test data".getBytes());
+            ResponseEntity<SttResponse> response = ResponseEntity.ok(mockStt);
+            given(restTemplateBuilder.build()).willReturn(restTemplate);
+            given(
+                restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
+                    any(ParameterizedTypeReference.class))).willReturn(response);
+            given(mockStt.getText()).willReturn(List.of());
+
+            //when
+            //then
+            assertThrows(InvalidFileException.class, () -> fileService.analyzeVoiceFile(mockFile));
+        }
+
     }
 
     @Nested

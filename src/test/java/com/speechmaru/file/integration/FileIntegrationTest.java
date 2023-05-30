@@ -23,6 +23,7 @@ import com.speechmaru.file.document.File;
 import com.speechmaru.file.dto.response.FileResponse;
 import com.speechmaru.file.repository.FileRepository;
 import com.speechmaru.record.document.Record;
+import com.speechmaru.record.dto.response.SttResponse;
 import com.speechmaru.record.repository.RecordRepository;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -60,6 +61,7 @@ public class FileIntegrationTest extends IntegrationTest {
         String uri = "/api/files";
         String title = "file title";
         List<String> texts = List.of("hello", "world");
+        SttResponse mockStt = new SttResponse(texts, null, null, null, null, null);
 
         MockMultipartFile mockFile = new MockMultipartFile("file", "test.wav", "audio/wav",
             "test data".getBytes());
@@ -69,7 +71,7 @@ public class FileIntegrationTest extends IntegrationTest {
         RestTemplate restTemplate = mock(RestTemplate.class);
         given(restTemplateBuilder.build()).willReturn(restTemplate);
 
-        ResponseEntity<List<String>> response = ResponseEntity.ok(texts);
+        ResponseEntity<SttResponse> response = ResponseEntity.ok(mockStt);
         given(
             restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
                 any(ParameterizedTypeReference.class))).willReturn(response);
