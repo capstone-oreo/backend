@@ -16,6 +16,7 @@ public class RecordResponse {
     private final List<Integer> speed;
     private final List<Integer> volume;
     private final List<String> keyword;
+    private final List<Integer> textInfo;
     private final List<String> habitualWord;
     private final String createdAt;
 
@@ -25,6 +26,7 @@ public class RecordResponse {
         this.speed = record.getSpeed();
         this.volume = record.getVolume();
         this.keyword = record.getKeyword();
+        this.textInfo = record.getTextInfo();
         this.habitualWord = record.getHabitualWord();
         this.createdAt = record.getCreatedAt();
     }
