@@ -31,19 +31,21 @@ public class RecordController {
         if (r == 0) {
             response = RecordResponse.builder()
                 .id("129387askdhiuh3")
-                .text(List.of("hello", "world"))
+                .text(List.of("hello", "world", "안녕하세요"))
                 .speed(List.of(2, 3, 5))
                 .volume(List.of(3, 2, 2))
                 .keyword(List.of("hello", "world"))
+                .textInfo(List.of(2, 0))
                 .habitualWord(List.of("음"))
                 .createdAt("23. 5. 18. 오후 7:03")
                 .build();
         } else {
             response = RecordResponse.builder()
                 .id("aa12zf43wr243")
-                .text(List.of("i", "am", "oreo"))
+                .text(List.of("i", "am", "oreo", "테스트 데이터입니다 안녕하세요"))
                 .speed(List.of(3, 2, 2, 1, 2))
                 .volume(List.of(1, 2, 2, 3, 1))
+                .textInfo(List.of(3, 1))
                 .habitualWord(List.of("그러니까"))
                 .keyword(List.of("oreo"))
                 .createdAt("23. 1. 1. 오후 12:12")
