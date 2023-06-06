@@ -64,14 +64,7 @@ public class FileService {
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new SttRequestException(Objects.requireNonNull(response.getBody()).toString());
         }
-        SttResponse sttResponse = (SttResponse) response.getBody();
-        if (sttResponse == null) {
-            throw new SttRequestException("STT 요청에 실패했습니다.");
-        }
-        if (sttResponse.getText() == null || sttResponse.getText().isEmpty()) {
-            throw new InvalidFileException("목소리가 없는 음성 파일입니다.");
-        }
-        return sttResponse;
+        return (SttResponse) response.getBody();
     }
 
     public Page<FileResponse> findFiles(Pageable pageable) {
