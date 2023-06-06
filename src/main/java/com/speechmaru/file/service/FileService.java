@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -57,14 +59,18 @@ public class FileService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<?> response = restTemplateBuilder.build()
-            .exchange("http://flask:8000/stt", HttpMethod.POST, requestEntity,
-                new ParameterizedTypeReference<>() {
-                });
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new SttRequestException(Objects.requireNonNull(response.getBody()).toString());
+        try {
+            ResponseEntity<SttResponse> response = restTemplateBuilder.build()
+                .exchange("http://flask:8000/stt", HttpMethod.POST, requestEntity,
+                    new ParameterizedTypeReference<>() {
+                    });
+            return response.getBody();
+        } catch (HttpServerErrorException e) {
+            String responseBody = e.getResponseBodyAsString();
+            String errorMessage = responseBody.replaceAll("^.*\"(.*)\"$", "$1");
+            throw new SttRequestException(errorMessage);
         }
-        return (SttResponse) response.getBody();
+
     }
 
     public Page<FileResponse> findFiles(Pageable pageable) {
