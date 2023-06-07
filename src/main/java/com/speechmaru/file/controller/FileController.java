@@ -69,33 +69,4 @@ public class FileController {
         storageService.deleteVoice(fileResponse.getFilename());
         return ResponseEntity.noContent().build();
     }
-
-    @PostMapping(value = "/files/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveFileTest(@RequestPart(name = "file") MultipartFile file) {
-        return test(file);
-    }
-
-    @PostMapping(value = "/files/test5sec", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveFileTest5sec(@RequestPart(name = "file") MultipartFile file)
-        throws InterruptedException {
-        Thread.sleep(5000);
-        return test(file);
-    }
-
-    private ResponseEntity<?> test(MultipartFile file) {
-        try {
-            if (file.getSize() <= 0) {
-                throw new IOException();
-            }
-            new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            };
-        } catch (IOException e) {
-            throw new InvalidFileException("유효하지 않은 파일입니다.");
-        }
-        return ResponseEntity.ok(file.getOriginalFilename());
-    }
 }
