@@ -34,13 +34,6 @@ public class GlobalExceptionHandler {
         return getValidErrorResponseEntity(e);
     }
 
-    // @ModelAttribute valid
-    @ExceptionHandler(BindException.class)
-    public ResponseEntity<ErrorResponse> handleModelAttributeValidationErrors(BindException e) {
-        log.error(e.getClass().getSimpleName(), e);
-        return getValidErrorResponseEntity(e);
-    }
-
     private ResponseEntity<ErrorResponse> getValidErrorResponseEntity(BindException e) {
         List<String> errors = new ArrayList<>();
         for (FieldError error : e.getBindingResult().getFieldErrors()) {

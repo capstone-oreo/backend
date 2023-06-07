@@ -8,6 +8,7 @@ import com.speechmaru.file.exception.SttRequestException;
 import com.speechmaru.file.repository.FileRepository;
 import com.speechmaru.record.dto.response.SttResponse;
 import java.io.IOException;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -56,18 +59,18 @@ public class FileService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<SttResponse> response = restTemplateBuilder.build()
-            .exchange("http://flask:8000/stt", HttpMethod.POST, requestEntity,
-                new ParameterizedTypeReference<>() {
-                });
-        SttResponse sttResponse = response.getBody();
-        if (!response.getStatusCode().is2xxSuccessful() || sttResponse == null) {
-            throw new SttRequestException("STT 요청에 실패했습니다.");
+        try {
+            ResponseEntity<SttResponse> response = restTemplateBuilder.build()
+                .exchange("http://flask:8000/stt", HttpMethod.POST, requestEntity,
+                    new ParameterizedTypeReference<>() {
+                    });
+            return response.getBody();
+        } catch (HttpServerErrorException e) {
+            String responseBody = e.getResponseBodyAsString();
+            String errorMessage = responseBody.replaceAll("^.*\"(.*)\"$", "$1");
+            throw new SttRequestException(errorMessage);
         }
-        if (sttResponse.getText() == null || sttResponse.getText().isEmpty()) {
-            throw new InvalidFileException("목소리가 없는 음성 파일입니다.");
-        }
-        return response.getBody();
+
     }
 
     public Page<FileResponse> findFiles(Pageable pageable) {

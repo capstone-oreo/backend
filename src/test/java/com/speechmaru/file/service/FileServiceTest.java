@@ -34,8 +34,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,7 +103,6 @@ class FileServiceTest {
             given(
                 restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
                     any(ParameterizedTypeReference.class))).willReturn(response);
-            given(mockStt.getText()).willReturn(List.of("hello"));
 
             //when
             SttResponse result = fileService.analyzeVoiceFile(mockFile);
@@ -124,38 +125,20 @@ class FileServiceTest {
         @Test
         @DisplayName("API 요청에 실패하면 예외가 발생한다.")
         void failApiRequest() {
-            //given
+            // given
             MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
                 "test data".getBytes());
-            ResponseEntity<Object> response = ResponseEntity.internalServerError().build();
+            ResponseEntity<Object> response = ResponseEntity.internalServerError().body("error");
             given(restTemplateBuilder.build()).willReturn(restTemplate);
             given(
                 restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
-                    any(ParameterizedTypeReference.class))).willReturn(response);
+                    any(ParameterizedTypeReference.class)))
+                .willThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Internal Server Error"));
 
             //when
             assertThrows(SttRequestException.class, () -> fileService.analyzeVoiceFile(mockFile));
         }
-
-        @Test
-        @DisplayName("목소리가 없는 file은 예외가 발생한다.")
-        void notInclueVoice() {
-            //given
-            SttResponse mockStt = mock(SttResponse.class);
-            MockMultipartFile mockFile = new MockMultipartFile("test", "test.wav", "audio/wav",
-                "test data".getBytes());
-            ResponseEntity<SttResponse> response = ResponseEntity.ok(mockStt);
-            given(restTemplateBuilder.build()).willReturn(restTemplate);
-            given(
-                restTemplate.exchange(eq("http://flask:8000/stt"), eq(HttpMethod.POST), any(),
-                    any(ParameterizedTypeReference.class))).willReturn(response);
-            given(mockStt.getText()).willReturn(List.of());
-
-            //when
-            //then
-            assertThrows(InvalidFileException.class, () -> fileService.analyzeVoiceFile(mockFile));
-        }
-
     }
 
     @Nested
